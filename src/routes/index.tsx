@@ -1,10 +1,21 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { MessageCircle, Camera, Heart, Rocket, Handshake, Coffee, Copy, Check } from "lucide-react";
+import { MessageCircle, Camera, Heart, Rocket, Handshake, Coffee, Copy, Check, Hammer } from "lucide-react";
+import workShot1 from "@/assets/work-1.jpg.asset.json";
+import workShot2 from "@/assets/work-2.jpg.asset.json";
+import workShot3 from "@/assets/work-3.jpg.asset.json";
+import workShot4 from "@/assets/work-4.jpg.asset.json";
 
 const DISCORD = "https://discord.gg/wXTNsqUJm";
 const INSTAGRAM = "https://www.instagram.com/jestercommunity.co/";
 const ROBLOX = "https://www.roblox.com/groups";
+
+const workShots = [
+  { src: workShot1.url, caption: "Forest environment — terrain, foliage & props" },
+  { src: workShot2.url, caption: "Beachside café build — models & lighting" },
+  { src: workShot3.url, caption: "Park detail — swing, lanterns & custom props" },
+  { src: workShot4.url, caption: "Garden pavilion — modeling & atmosphere" },
+];
 
 export const Route = createFileRoute("/")({
   head: () => ({
