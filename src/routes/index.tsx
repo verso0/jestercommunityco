@@ -13,6 +13,8 @@ export const Route = createFileRoute("/")({
       { name: "description", content: "Six independent creators building fresh, memorable Roblox worlds. Join the Discord, support, or invest in Jester Studios." },
       { property: "og:title", content: "Jester Studios — Playful Chaos. Serious Passion." },
       { property: "og:description", content: "Six independent creators building fresh, memorable Roblox worlds from the ground up." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Index,

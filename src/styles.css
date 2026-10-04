@@ -117,6 +117,9 @@
   transform-style: preserve-3d;
   transition: transform .16s ease-out, box-shadow .3s, border-color .3s;
 }
+.reveal.mouse-tilt.in {
+  transform: perspective(900px) rotateX(var(--tilt-y)) rotateY(var(--tilt-x));
+}
 .mouse-drift { translate: calc(var(--mouse-x, 0) * 24px) calc(var(--mouse-y, 0) * 24px); transition: translate .2s ease-out; }
 .mouse-drift-reverse { translate: calc(var(--mouse-x, 0) * -18px) calc(var(--mouse-y, 0) * -18px); transition: translate .2s ease-out; }
 
