@@ -115,7 +115,7 @@ function Index() {
           <Reveal className="glow-border isolate">
             <div className="rounded-2xl bg-surface p-8 sm:p-12">
               <span className="inline-flex items-center gap-2 rounded-full bg-primary/15 px-3 py-1 text-sm font-medium text-primary"><Rocket size={16} /> Debut Game • Active Development</span>
-              <h2 className="mt-6 text-3xl font-extrabold sm:text-5xl">[Project Name / <span className="text-amber">Classified</span>]</h2>
+              <h2 className="mt-6 text-3xl font-extrabold sm:text-5xl">[Konnect Us / <span className="text-amber">Classified</span>]</h2>
               <p className="mt-4 max-w-2xl text-lg text-muted-foreground">Our inaugural Roblox experience is underway. Focused on snappy mechanics, collaborative multiplayer fun, and high replayability.</p>
               <div className="mt-8">
                 <div className="mb-2 flex justify-between text-sm"><span className="text-muted-foreground">Development progress</span><span className="font-bold text-neon">35%</span></div>
