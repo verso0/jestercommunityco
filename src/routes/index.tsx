@@ -19,12 +19,12 @@ export const Route = createFileRoute("/")({
 });
 
 const team = [
-  { name: "[Name] / Sagi", role: "Lead Scripter", bio: "Turns wild ideas into working systems. Calm under pressure, chaotic in brainstorms." },
-  { name: "[Name]", role: "3D Modeler", bio: "Sculpts every prop and character with obsessive detail. Will debate low-poly vs. high-poly for hours." },
-  { name: "[Name]", role: "Level Designer", bio: "Builds worlds that beg to be explored. Loves hidden secrets and sneaky shortcuts." },
-  { name: "[Name]", role: "UI/UX Artist", bio: "Makes every button feel satisfying to press. Color palettes are a personality trait." },
-  { name: "[Name]", role: "Animator", bio: "Brings everything to life with bounce and swagger. Has strong opinions about squash and stretch." },
-  { name: "[Name]", role: "Community Manager", bio: "The voice of the team and friend to every player. Runs playtests and keeps the vibes high." },
+  { name: "HAMZA", role: "Lead Scripter", bio: "Turns wild ideas into working systems. Calm under pressure, chaotic in brainstorms." },
+  { name: "VERSO", role: "3D MODELER/COMMUNITY MANAGER", bio: "Sculpts every prop and character with obsessive detail. Will debate low-poly vs. high-poly for hours." },
+  { name: "NYXEN", role: "MANAGER/3D MODLER", bio: "Builds worlds that beg to be explored. Loves hidden secrets and sneaky shortcuts." },
+  { name: "BUDDI", role: "LEAD MODEL DESIGNER/3D MODELER", bio: "Makes every button feel satisfying to press. Color palettes are a personality trait." },
+  { name: "GROZA", role: "", bio: "Brings everything to life with bounce and swagger. Has strong opinions about squash and stretch." },
+  { name: "VEE", role: "SOCIAL MEDIA MANAGER", bio: "The voice of the team and friend to every player. Runs playtests and keeps the vibes high." },
 ];
 
 function Reveal({ children, className = "", delay = 0 }: { children: ReactNode; className?: string; delay?: number }) {
