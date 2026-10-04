@@ -229,6 +229,32 @@ function Index() {
         </div>
       </section>
 
+      {/* Work */}
+      <section id="work" className="bg-surface py-28">
+        <div className="mx-auto max-w-6xl px-5">
+          <Reveal className="text-center">
+            <p className="font-bold uppercase tracking-widest text-amber text-sm">Our Work</p>
+            <h2 className="mt-3 text-3xl font-extrabold sm:text-5xl">A Small Glimpse of <span className="text-gradient">How We Work</span></h2>
+            <p className="mx-auto mt-5 max-w-2xl text-lg text-muted-foreground">
+              These shots come straight from our current project — a small example of what we build and how we work. Keep in mind: we're fully indie, and this is our very first game.
+            </p>
+          </Reveal>
+          <div className="mt-14 grid gap-6 sm:grid-cols-2">
+            {workShots.map((shot, i) => (
+              <Reveal key={shot.src} delay={(i % 2) * 120} className="glass glow-hover mouse-tilt group rounded-2xl p-2">
+                <div className="overflow-hidden rounded-xl">
+                  <img src={shot.src} alt={`Work in progress by Jester Studios — ${shot.caption}`} loading="lazy"
+                    className="aspect-video w-full object-cover transition duration-500 group-hover:scale-[1.04]" />
+                </div>
+                <p className="flex items-center gap-2 px-3 py-3 text-sm text-muted-foreground">
+                  <Hammer size={14} className="shrink-0 text-neon" /> {shot.caption}
+                </p>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Support */}
       <section id="support" className="bg-surface py-28">
         <div className="mx-auto max-w-6xl px-5">
