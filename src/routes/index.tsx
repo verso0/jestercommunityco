@@ -84,7 +84,7 @@ function JesterCursor() {
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => {
         cursor.style.transform = `translate3d(${event.clientX}px, ${event.clientY}px, 0)`;
-        cursor.dataset.visible = "true";
+        cursor.dataset["visible"] = "true";
 
         const x = event.clientX / window.innerWidth - 0.5;
         const y = event.clientY / window.innerHeight - 0.5;
@@ -92,8 +92,8 @@ function JesterCursor() {
         document.documentElement.style.setProperty("--mouse-y", `${y}`);
       });
     };
-    const hide = () => { cursor.dataset.visible = "false"; };
-    const show = () => { cursor.dataset.visible = "true"; };
+    const hide = () => { cursor.dataset["visible"] = "false"; };
+    const show = () => { cursor.dataset["visible"] = "true"; };
 
     window.addEventListener("pointermove", move, { passive: true });
     document.documentElement.addEventListener("mouseleave", hide);
