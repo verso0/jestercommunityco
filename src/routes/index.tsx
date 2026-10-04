@@ -1,14 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
-import { MessageCircle, Camera, Heart, Rocket, Handshake, Coffee } from "lucide-react";
+import { useEffect, useState, type ReactNode } from "react";
+import { MessageCircle, Camera, Heart, Rocket, Handshake, Coffee, Copy, Check } from "lucide-react";
 
 const DISCORD = "https://discord.gg/wXTNsqUJm";
 const INSTAGRAM = "https://instagram.com/jestercommunity.co";
 const ROBLOX = "https://www.roblox.com/groups";
-const EASYPESA = "";
-const JAZZCASH = "";
-const UPI_ID = "";
-const CRYPTO = "";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -47,6 +43,30 @@ function Btn({ href, children, variant = "primary" }: { href: string; children: 
       className={`inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3 font-bold transition hover:-translate-y-0.5 ${styles}`}>
       {children}
     </a>
+  );
+}
+
+function CopyButton({ value }: { value: string }) {
+  const [copied, setCopied] = useState(false);
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(value);
+    } catch {
+      const ta = document.createElement("textarea");
+      ta.value = value;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+    }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+  return (
+    <button onClick={copy} title="Copy" aria-label={`Copy ${value}`}
+      className="shrink-0 rounded-lg border border-border p-2 text-muted-foreground transition hover:border-neon hover:text-neon">
+      {copied ? <Check size={16} className="text-neon" /> : <Copy size={16} />}
+    </button>
   );
 }
 
@@ -147,11 +167,44 @@ function Index() {
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber/15 text-amber"><Coffee /></div>
               <h3 className="mt-5 text-xl font-bold">Community Support & Donations</h3>
               <p className="mt-3 text-muted-foreground">All support goes straight into development — servers, assets, and tools. Pick any channel below.</p>
-              <div className="mt-6 space-y-3">
-                {[["EasyPesa", EASYPESA], ["JazzCash", JAZZCASH], ["UPI", UPI_ID], ["Cryptocurrency", CRYPTO]].map(([label, value]) => (
-                  <div key={label} className="flex items-center justify-between rounded-xl border border-border bg-background/60 px-4 py-3">
-                    <span className="text-sm font-bold">{label}</span>
-                    <span className="text-sm text-muted-foreground">{value || "Details coming soon"}</span>
+              <div className="mt-6 space-y-5">
+                {[
+                  {
+                    flag: "🇵🇰",
+                    label: "Pakistan",
+                    items: [
+                      { name: "EasyPaisa", value: "03462972377", note: "" },
+                      { name: "JazzCash", value: "", note: "Currently unavailable" },
+                    ],
+                  },
+                  {
+                    flag: "🇮🇳",
+                    label: "India",
+                    items: [
+                      { name: "UPI", value: "+918780481953", note: "" },
+                    ],
+                  },
+                  {
+                    flag: "🌍",
+                    label: "International",
+                    items: [
+                      { name: "Tether USDT — BNB Smart Chain (BEP20)", value: "0x66c8F05B7E7D80baDb7b55609424deE89fc848D3", note: "" },
+                    ],
+                  },
+                ].map((group) => (
+                  <div key={group.label}>
+                    <p className="mb-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">{group.flag} {group.label}</p>
+                    <div className="space-y-3">
+                      {group.items.map((item) => (
+                        <div key={item.name} className="flex items-center justify-between gap-3 rounded-xl border border-border bg-background/60 px-4 py-3">
+                          <div className="min-w-0">
+                            <p className="text-sm font-bold">{item.name}</p>
+                            <p className="break-all text-sm text-muted-foreground">{item.value || item.note}</p>
+                          </div>
+                          {item.value && <CopyButton value={item.value} />}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 ))}
               </div>
