@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { MessageCircle, Camera, Heart, Rocket, Handshake, Coffee, Copy, Check } from "lucide-react";
 
 const DISCORD = "https://discord.gg/wXTNsqUJm";
-const INSTAGRAM = "https://instagram.com/jestercommunity.co";
+const INSTAGRAM = "https://www.instagram.com/jestercommunity.co/";
 const ROBLOX = "https://www.roblox.com/groups";
 
 export const Route = createFileRoute("/")({
@@ -70,15 +70,76 @@ function CopyButton({ value }: { value: string }) {
   );
 }
 
+function JesterCursor() {
+  const cursorRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const cursor = cursorRef.current;
+    if (!cursor || !window.matchMedia("(pointer: fine)").matches) return;
+
+    let frame = 0;
+    const move = (event: PointerEvent) => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        cursor.style.transform = `translate3d(${event.clientX}px, ${event.clientY}px, 0)`;
+        cursor.dataset.visible = "true";
+
+        const x = event.clientX / window.innerWidth - 0.5;
+        const y = event.clientY / window.innerHeight - 0.5;
+        document.documentElement.style.setProperty("--mouse-x", `${x}`);
+        document.documentElement.style.setProperty("--mouse-y", `${y}`);
+      });
+    };
+    const hide = () => { cursor.dataset.visible = "false"; };
+    const show = () => { cursor.dataset.visible = "true"; };
+
+    window.addEventListener("pointermove", move, { passive: true });
+    document.documentElement.addEventListener("mouseleave", hide);
+    document.documentElement.addEventListener("mouseenter", show);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("pointermove", move);
+      document.documentElement.removeEventListener("mouseleave", hide);
+      document.documentElement.removeEventListener("mouseenter", show);
+    };
+  }, []);
+
+  return <div ref={cursorRef} className="jester-cursor" aria-hidden="true"><span>🃏</span></div>;
+}
+
 function Index() {
   useEffect(() => {
     const io = new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting && e.target.classList.add("in")), { threshold: 0.15 });
     document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
-    return () => io.disconnect();
+
+    const tilts = [...document.querySelectorAll<HTMLElement>(".mouse-tilt")];
+    const cleanups = tilts.map((element) => {
+      const move = (event: PointerEvent) => {
+        const rect = element.getBoundingClientRect();
+        element.style.setProperty("--tilt-x", `${((event.clientX - rect.left) / rect.width - 0.5) * 7}deg`);
+        element.style.setProperty("--tilt-y", `${((event.clientY - rect.top) / rect.height - 0.5) * -7}deg`);
+      };
+      const reset = () => {
+        element.style.setProperty("--tilt-x", "0deg");
+        element.style.setProperty("--tilt-y", "0deg");
+      };
+      element.addEventListener("pointermove", move);
+      element.addEventListener("pointerleave", reset);
+      return () => {
+        element.removeEventListener("pointermove", move);
+        element.removeEventListener("pointerleave", reset);
+      };
+    });
+
+    return () => {
+      io.disconnect();
+      cleanups.forEach((cleanup) => cleanup());
+    };
   }, []);
 
   return (
     <div className="overflow-x-hidden">
+      <JesterCursor />
       {/* Nav */}
       <header className="fixed inset-x-0 top-0 z-50 border-b border-border bg-background/70 backdrop-blur-lg">
         <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
@@ -94,10 +155,10 @@ function Index() {
 
       {/* Hero */}
       <section className="relative flex min-h-screen items-center bg-grid pt-24">
-        <div className="pointer-events-none absolute -left-32 top-20 h-96 w-96 rounded-full bg-primary/30 blur-[120px]" />
-        <div className="pointer-events-none absolute -right-20 bottom-10 h-80 w-80 rounded-full bg-neon/20 blur-[120px]" />
-        <div className="floaty pointer-events-none absolute right-[10%] top-1/4 hidden text-7xl lg:block">🎲</div>
-        <div className="floaty pointer-events-none absolute left-[8%] bottom-1/4 hidden text-6xl lg:block" style={{ animationDelay: "2s" }}>🎮</div>
+        <div className="mouse-drift pointer-events-none absolute -left-32 top-20 h-96 w-96 rounded-full bg-primary/30 blur-[120px]" />
+        <div className="mouse-drift-reverse pointer-events-none absolute -right-20 bottom-10 h-80 w-80 rounded-full bg-neon/20 blur-[120px]" />
+        <div className="floaty mouse-drift pointer-events-none absolute right-[10%] top-1/4 hidden text-7xl lg:block">🎲</div>
+        <div className="floaty mouse-drift-reverse pointer-events-none absolute left-[8%] bottom-1/4 hidden text-6xl lg:block" style={{ animationDelay: "2s" }}>🎮</div>
         <div className="relative mx-auto max-w-5xl px-5 text-center">
           <Reveal>
             <span className="glass inline-block rounded-full px-4 py-1.5 text-sm text-muted-foreground">🃏 Jester Studios • Indie Roblox Development</span>
@@ -137,7 +198,7 @@ function Index() {
       <section id="project" className="py-28">
         <div className="mx-auto max-w-4xl px-5">
           <Reveal className="glow-border isolate">
-            <div className="rounded-2xl bg-surface p-8 sm:p-12">
+            <div className="mouse-tilt rounded-2xl bg-surface p-8 sm:p-12">
               <span className="inline-flex items-center gap-2 rounded-full bg-primary/15 px-3 py-1 text-sm font-medium text-primary"><Rocket size={16} /> Debut Game • Active Development</span>
               <h2 className="mt-6 text-3xl font-extrabold sm:text-5xl">[Konnect Us / <span className="text-amber">Classified</span>]</h2>
               <p className="mt-4 max-w-2xl text-lg text-muted-foreground">Our inaugural Roblox experience is underway. Focused on snappy mechanics, collaborative multiplayer fun, and high replayability.</p>
@@ -163,7 +224,7 @@ function Index() {
             <p className="mx-auto mt-5 max-w-2xl text-lg text-muted-foreground">Help us bridge the gap. Your support directly funds server costs, custom assets, 3D models, and the development of our upcoming games.</p>
           </Reveal>
           <div className="mt-14 grid gap-6 md:grid-cols-2">
-            <Reveal className="glass glow-hover rounded-2xl p-8">
+            <Reveal className="glass glow-hover mouse-tilt rounded-2xl p-8">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber/15 text-amber"><Coffee /></div>
               <h3 className="mt-5 text-xl font-bold">Community Support & Donations</h3>
               <p className="mt-3 text-muted-foreground">All support goes straight into development — servers, assets, and tools. Pick any channel below.</p>
@@ -209,7 +270,7 @@ function Index() {
                 ))}
               </div>
             </Reveal>
-            <Reveal delay={150} className="glass glow-hover rounded-2xl p-8">
+            <Reveal delay={150} className="glass glow-hover mouse-tilt rounded-2xl p-8">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/15 text-primary"><Handshake /></div>
               <h3 className="mt-5 text-xl font-bold">Future Project Investment & Partnerships</h3>
               <p className="mt-3 text-muted-foreground">Interested in sponsoring or investing in our debut game or future roadmap? We're open to strategic partners who believe in indie talent.</p>
@@ -227,17 +288,13 @@ function Index() {
           </Reveal>
           <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {team.map((m, i) => (
-              <Reveal key={m.role} delay={(i % 3) * 120} className="glass glow-hover rounded-2xl p-7 text-center">
+              <Reveal key={m.name} delay={(i % 3) * 120} className="glass glow-hover mouse-tilt rounded-2xl p-7 text-center">
                 <div className="heartbeat mx-auto h-24 w-24 rounded-full" style={{ ["--d" as string]: i }}>
                   <div className="flex h-full w-full items-center justify-center rounded-full bg-gradient-to-br from-primary to-neon/60 text-3xl">🃏</div>
                 </div>
                 <h3 className="mt-6 text-lg font-bold">{m.name}</h3>
                 <span className="mt-2 inline-block rounded-full bg-amber/15 px-3 py-1 text-xs font-bold uppercase tracking-wide text-amber">{m.role}</span>
                 <p className="mt-4 text-sm text-muted-foreground">{m.bio}</p>
-                <div className="mt-5 flex justify-center gap-3">
-                  <a href={DISCORD} target="_blank" rel="noreferrer" aria-label="Discord" className="rounded-lg border border-border p-2 text-muted-foreground transition hover:border-primary hover:text-primary"><MessageCircle size={18} /></a>
-                  <a href={INSTAGRAM} target="_blank" rel="noreferrer" aria-label="Instagram" className="rounded-lg border border-border p-2 text-muted-foreground transition hover:border-neon hover:text-neon"><Camera size={18} /></a>
-                </div>
               </Reveal>
             ))}
           </div>
@@ -258,7 +315,7 @@ function Index() {
         <div className="mx-auto flex max-w-6xl flex-col items-center gap-5 px-5 text-center text-sm text-muted-foreground">
           <div className="flex flex-wrap justify-center gap-6">
             <a href={DISCORD} className="hover:text-neon">Discord</a>
-            <a href={INSTAGRAM} className="hover:text-neon">Instagram</a>
+            <a href={INSTAGRAM} target="_blank" rel="noreferrer" className="hover:text-neon">Instagram</a>
             <a href={ROBLOX} className="hover:text-neon">Roblox Group</a>
             <a href="#support" className="hover:text-neon">Support/Invest</a>
           </div>
