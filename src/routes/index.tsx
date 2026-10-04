@@ -23,7 +23,7 @@ const team = [
   { name: "VERSO", role: "3D MODELER/COMMUNITY MANAGER", bio: "Sculpts every prop and character with obsessive detail. Will debate low-poly vs. high-poly for hours." },
   { name: "NYXEN", role: "MANAGER/3D MODLER", bio: "Builds worlds that beg to be explored. Loves hidden secrets and sneaky shortcuts." },
   { name: "BUDDI", role: "LEAD MODEL DESIGNER/3D MODELER", bio: "Makes every button feel satisfying to press. Color palettes are a personality trait." },
-  { name: "GROZA", role: "", bio: "Brings everything to life with bounce and swagger. Has strong opinions about squash and stretch." },
+  { name: "GROZA", role: "MODERATOR", bio: "Brings everything to life with bounce and swagger. Has strong opinions about squash and stretch." },
   { name: "VEE", role: "SOCIAL MEDIA MANAGER", bio: "The voice of the team and friend to every player. Runs playtests and keeps the vibes high." },
 ];
 
@@ -118,14 +118,13 @@ function Index() {
               <h2 className="mt-6 text-3xl font-extrabold sm:text-5xl">[Konnect Us / <span className="text-amber">Classified</span>]</h2>
               <p className="mt-4 max-w-2xl text-lg text-muted-foreground">Our inaugural Roblox experience is underway. Focused on snappy mechanics, collaborative multiplayer fun, and high replayability.</p>
               <div className="mt-8">
-                <div className="mb-2 flex justify-between text-sm"><span className="text-muted-foreground">Development progress</span><span className="font-bold text-neon">35%</span></div>
+                <div className="mb-2 flex justify-between text-sm"><span className="text-muted-foreground">Development progress</span><span className="font-bold text-neon">95%</span></div>
                 <div className="h-3 overflow-hidden rounded-full bg-muted">
-                  <div className="h-full w-[35%] rounded-full bg-gradient-to-r from-neon via-primary to-amber" />
+                  <div className="h-full w-[95%] rounded-full bg-gradient-to-r from-neon via-primary to-amber" />
                 </div>
               </div>
-              <div className="mt-8 flex flex-wrap items-center gap-4">
+              <div className="mt-8">
                 <span className="rounded-lg border border-amber/50 px-3 py-1.5 text-sm font-bold text-amber">COMING SOON</span>
-                <a href={DISCORD} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 font-bold text-neon hover:underline">Sneak peeks on Discord <ArrowRight size={16} /></a>
               </div>
             </div>
           </Reveal>
