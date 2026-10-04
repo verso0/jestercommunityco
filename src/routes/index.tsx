@@ -2,8 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 import { MessageCircle, Camera, Heart, Rocket, Handshake, Coffee } from "lucide-react";
 
-const DISCORD = "https://discord.gg/";
-const INSTAGRAM = "https://instagram.com/";
+const DISCORD = "https://discord.gg/wXTNsqUJm";
+const INSTAGRAM = "https://instagram.com/jestercommunity.co";
 const ROBLOX = "https://www.roblox.com/groups";
 const EASYPESA = "";
 const JAZZCASH = "";
