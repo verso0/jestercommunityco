@@ -160,7 +160,7 @@ function Index() {
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/15 text-primary"><Handshake /></div>
               <h3 className="mt-5 text-xl font-bold">Future Project Investment & Partnerships</h3>
               <p className="mt-3 text-muted-foreground">Interested in sponsoring or investing in our debut game or future roadmap? We're open to strategic partners who believe in indie talent.</p>
-              <div className="mt-6"><Btn href="mailto:hello@jestercommunity.co"><Sparkles size={18} /> Contact for Investment</Btn></div>
+              <div className="mt-6"><Btn href={INSTAGRAM}><Camera size={18} /> Contact for Investment</Btn></div>
             </Reveal>
           </div>
         </div>
