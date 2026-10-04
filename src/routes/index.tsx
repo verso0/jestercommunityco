@@ -1,10 +1,21 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { MessageCircle, Camera, Heart, Rocket, Handshake, Coffee, Copy, Check } from "lucide-react";
+import { MessageCircle, Camera, Heart, Rocket, Handshake, Coffee, Copy, Check, Hammer } from "lucide-react";
+import workShot1 from "@/assets/work-1.jpg.asset.json";
+import workShot2 from "@/assets/work-2.jpg.asset.json";
+import workShot3 from "@/assets/work-3.jpg.asset.json";
+import workShot4 from "@/assets/work-4.jpg.asset.json";
 
 const DISCORD = "https://discord.gg/wXTNsqUJm";
 const INSTAGRAM = "https://www.instagram.com/jestercommunity.co/";
 const ROBLOX = "https://www.roblox.com/groups";
+
+const workShots = [
+  { src: workShot1.url, caption: "Forest environment — terrain, foliage & props" },
+  { src: workShot2.url, caption: "Beachside café build — models & lighting" },
+  { src: workShot3.url, caption: "Park detail — swing, lanterns & custom props" },
+  { src: workShot4.url, caption: "Garden pavilion — modeling & atmosphere" },
+];
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -147,7 +158,7 @@ function Index() {
         <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
           <a href="#" className="font-display text-lg font-extrabold">🃏 Jester<span className="text-neon">.</span></a>
           <div className="hidden gap-7 text-sm text-muted-foreground md:flex">
-            {[["About", "#about"], ["Project", "#project"], ["Team", "#team"], ["Support", "#support"]].map(([l, h]) => (
+            {[["About", "#about"], ["Project", "#project"], ["Work", "#work"], ["Team", "#team"], ["Support", "#support"]].map(([l, h]) => (
               <a key={h} href={h} className="hover:text-neon transition">{l}</a>
             ))}
           </div>
@@ -215,6 +226,32 @@ function Index() {
               </div>
             </div>
           </Reveal>
+        </div>
+      </section>
+
+      {/* Work */}
+      <section id="work" className="bg-surface py-28">
+        <div className="mx-auto max-w-6xl px-5">
+          <Reveal className="text-center">
+            <p className="font-bold uppercase tracking-widest text-amber text-sm">Our Work</p>
+            <h2 className="mt-3 text-3xl font-extrabold sm:text-5xl">A Small Glimpse of <span className="text-gradient">How We Work</span></h2>
+            <p className="mx-auto mt-5 max-w-2xl text-lg text-muted-foreground">
+              These shots come straight from our current project — a small example of what we build and how we work. Keep in mind: we're fully indie, and this is our very first game.
+            </p>
+          </Reveal>
+          <div className="mt-14 grid gap-6 sm:grid-cols-2">
+            {workShots.map((shot, i) => (
+              <Reveal key={shot.src} delay={(i % 2) * 120} className="glass glow-hover mouse-tilt group rounded-2xl p-2">
+                <div className="overflow-hidden rounded-xl">
+                  <img src={shot.src} alt={`Work in progress by Jester Studios — ${shot.caption}`} loading="lazy"
+                    className="aspect-video w-full object-cover transition duration-500 group-hover:scale-[1.04]" />
+                </div>
+                <p className="flex items-center gap-2 px-3 py-3 text-sm text-muted-foreground">
+                  <Hammer size={14} className="shrink-0 text-neon" /> {shot.caption}
+                </p>
+              </Reveal>
+            ))}
+          </div>
         </div>
       </section>
 
