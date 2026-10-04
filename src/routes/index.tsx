@@ -158,7 +158,7 @@ function Index() {
         <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
           <a href="#" className="font-display text-lg font-extrabold">🃏 Jester<span className="text-neon">.</span></a>
           <div className="hidden gap-7 text-sm text-muted-foreground md:flex">
-            {[["About", "#about"], ["Project", "#project"], ["Team", "#team"], ["Support", "#support"]].map(([l, h]) => (
+            {[["About", "#about"], ["Project", "#project"], ["Work", "#work"], ["Team", "#team"], ["Support", "#support"]].map(([l, h]) => (
               <a key={h} href={h} className="hover:text-neon transition">{l}</a>
             ))}
           </div>
