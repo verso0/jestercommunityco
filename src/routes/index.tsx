@@ -140,7 +140,7 @@ function Index() {
   }, []);
 
   return (
-    <div className="overflow-x-hidden">
+    <div className="site-content overflow-x-hidden">
       <JesterCursor />
       {/* Nav */}
       <header className="fixed inset-x-0 top-0 z-50 border-b border-border bg-background/70 backdrop-blur-lg">
@@ -163,7 +163,7 @@ function Index() {
         <div className="floaty mouse-drift-reverse pointer-events-none absolute left-[8%] bottom-1/4 hidden text-6xl lg:block" style={{ animationDelay: "2s" }}>🎮</div>
         <div className="relative mx-auto max-w-5xl px-5 text-center">
           <Reveal>
-            <span className="glass inline-block rounded-full px-4 py-1.5 text-sm text-muted-foreground">🃏 Jester Studios • Indie Roblox Development</span>
+            <span className="glass mouse-tilt inline-block rounded-full px-4 py-1.5 text-sm text-muted-foreground">🃏 Jester Studios • Indie Roblox Development</span>
           </Reveal>
           <Reveal delay={100}>
             <h1 className="mt-8 text-4xl font-extrabold leading-tight sm:text-6xl md:text-7xl">
@@ -259,7 +259,7 @@ function Index() {
                     <p className="mb-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">{group.flag} {group.label}</p>
                     <div className="space-y-3">
                       {group.items.map((item) => (
-                        <div key={item.name} className="flex items-center justify-between gap-3 rounded-xl border border-border bg-background/60 px-4 py-3">
+                        <div key={item.name} className="mouse-tilt flex items-center justify-between gap-3 rounded-xl border border-border bg-background/60 px-4 py-3">
                           <div className="min-w-0">
                             <p className="text-sm font-bold">{item.name}</p>
                             <p className="break-all text-sm text-muted-foreground">{item.value || item.note}</p>
@@ -305,7 +305,7 @@ function Index() {
 
       {/* Community */}
       <section className="px-5 pb-28">
-        <Reveal className="relative mx-auto max-w-5xl overflow-hidden rounded-3xl bg-gradient-to-br from-primary/40 via-surface to-neon/20 p-10 text-center sm:p-16 border border-border">
+        <Reveal className="mouse-tilt relative mx-auto max-w-5xl overflow-hidden rounded-3xl bg-gradient-to-br from-primary/40 via-surface to-neon/20 p-10 text-center sm:p-16 border border-border">
           <h2 className="text-3xl font-extrabold sm:text-4xl">Playtests. Devlogs. Feedback.</h2>
           <p className="mx-auto mt-4 max-w-xl text-lg text-muted-foreground">Join our Discord to get early playtest access, read developer logs, and help shape our games in live feedback sessions.</p>
           <div className="mt-8"><Btn href={DISCORD}><MessageCircle size={18} /> Join the Discord</Btn></div>

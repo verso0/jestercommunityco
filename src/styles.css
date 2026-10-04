@@ -75,11 +75,11 @@
   background-size: 48px 48px;
 }
 @utility glow-hover {
-  transition: box-shadow .3s, border-color .3s, transform .3s;
+  transition: box-shadow .3s, border-color .3s, translate .3s;
   &:hover {
     border-color: oklch(0.606 0.219 293 / 60%);
     box-shadow: 0 0 32px -6px oklch(0.606 0.219 293 / 55%);
-    transform: translateY(-4px);
+    translate: 0 -4px;
   }
 }
 
@@ -119,6 +119,26 @@
 }
 .reveal.mouse-tilt.in {
   transform: perspective(900px) rotateX(var(--tilt-y)) rotateY(var(--tilt-x));
+}
+.mouse-tilt:hover {
+  border-color: color-mix(in oklch, var(--neon) 45%, var(--border));
+  box-shadow: 0 12px 36px -18px var(--primary), 0 0 24px -16px var(--neon);
+}
+
+.site-content :is(h1, h2, h3, p, span) {
+  transition: color .22s ease, text-shadow .22s ease, filter .22s ease;
+}
+.site-content :is(h1, h2, h3):hover {
+  color: var(--neon);
+  text-shadow: 0 0 10px color-mix(in oklch, var(--neon) 75%, transparent), 0 0 24px color-mix(in oklch, var(--primary) 55%, transparent);
+}
+.site-content section p:hover {
+  color: var(--foreground);
+  text-shadow: 0 0 12px color-mix(in oklch, var(--primary) 55%, transparent);
+}
+.site-content section span:hover {
+  filter: brightness(1.25) saturate(1.35);
+  text-shadow: 0 0 10px color-mix(in oklch, var(--amber) 65%, transparent);
 }
 .mouse-drift { translate: calc(var(--mouse-x, 0) * 24px) calc(var(--mouse-y, 0) * 24px); transition: translate .2s ease-out; }
 .mouse-drift-reverse { translate: calc(var(--mouse-x, 0) * -18px) calc(var(--mouse-y, 0) * -18px); transition: translate .2s ease-out; }
