@@ -1,10 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
-import { MessageCircle, Camera, Heart, Rocket, Gamepad2, Handshake, Coffee, Sparkles } from "lucide-react";
+import { MessageCircle, Camera, Heart, Rocket, Handshake, Coffee } from "lucide-react";
 
 const DISCORD = "https://discord.gg/";
 const INSTAGRAM = "https://instagram.com/";
 const ROBLOX = "https://www.roblox.com/groups";
+const EASYPESA = "";
+const JAZZCASH = "";
+const UPI_ID = "";
+const CRYPTO = "";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -19,12 +23,12 @@ export const Route = createFileRoute("/")({
 });
 
 const team = [
-  { name: "HAMZA", role: "Lead Scripter", bio: "Turns wild ideas into working systems. Calm under pressure, chaotic in brainstorms." },
-  { name: "VERSO", role: "3D MODELER/COMMUNITY MANAGER", bio: "Sculpts every prop and character with obsessive detail. Will debate low-poly vs. high-poly for hours." },
-  { name: "NYXEN", role: "MANAGER/3D MODLER", bio: "Builds worlds that beg to be explored. Loves hidden secrets and sneaky shortcuts." },
-  { name: "BUDDI", role: "LEAD MODEL DESIGNER/3D MODELER", bio: "Makes every button feel satisfying to press. Color palettes are a personality trait." },
-  { name: "GROZA", role: "MODERATOR", bio: "Brings everything to life with bounce and swagger. Has strong opinions about squash and stretch." },
-  { name: "VEE", role: "SOCIAL MEDIA MANAGER", bio: "The voice of the team and friend to every player. Runs playtests and keeps the vibes high." },
+  { name: "HAMZA", role: "Lead Scripter", bio: "The engine behind the studio. Turns late-night ideas into clean, working systems — and never breaks a sweat doing it. If it runs smoothly, it's his." },
+  { name: "VERSO", role: "3D MODELER/COMMUNITY MANAGER", bio: "Crafts models with obsessive detail by day, keeps the community smiling by night. The friendly bridge between the studio and its players." },
+  { name: "NYXEN", role: "MANAGER/3D MODLER", bio: "Keeps everyone organized and on schedule, then jumps straight into modeling. The planner with an artist's eye for worlds that beg to be explored." },
+  { name: "BUDDI", role: "LEAD MODEL DESIGNER/3D MODELER", bio: "Defines the look of everything — shapes, colors, style. A perfectionist who won't ship a model until it feels exactly right." },
+  { name: "GROZA", role: "MODERATOR", bio: "Keeps the community safe, fair, and fun. Calm, sharp, and always paying attention — the guardian of the vibes." },
+  { name: "VEE", role: "SOCIAL MEDIA MANAGER", bio: "The voice of Jester Studios. Posts, hype, and announcements — lives online so the community always knows what's coming next." },
 ];
 
 function Reveal({ children, className = "", delay = 0 }: { children: ReactNode; className?: string; delay?: number }) {
@@ -142,10 +146,14 @@ function Index() {
             <Reveal className="glass glow-hover rounded-2xl p-8">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber/15 text-amber"><Coffee /></div>
               <h3 className="mt-5 text-xl font-bold">Community Support & Donations</h3>
-              <p className="mt-3 text-muted-foreground">Tip or donate directly to help cover tools, plugins, and development coffee. Every bit keeps the lights on.</p>
-              <div className="mt-6 flex flex-wrap gap-3">
-                <Btn href={ROBLOX} variant="amber"><Gamepad2 size={18} /> Donate via Robux / Group Store</Btn>
-                <Btn href="https://ko-fi.com/" variant="ghost"><Heart size={18} /> Ko-fi / Patreon</Btn>
+              <p className="mt-3 text-muted-foreground">All support goes straight into development — servers, assets, and tools. Pick any channel below.</p>
+              <div className="mt-6 space-y-3">
+                {[["EasyPesa", EASYPESA], ["JazzCash", JAZZCASH], ["UPI", UPI_ID], ["Cryptocurrency", CRYPTO]].map(([label, value]) => (
+                  <div key={label} className="flex items-center justify-between rounded-xl border border-border bg-background/60 px-4 py-3">
+                    <span className="text-sm font-bold">{label}</span>
+                    <span className="text-sm text-muted-foreground">{value || "Details coming soon"}</span>
+                  </div>
+                ))}
               </div>
             </Reveal>
             <Reveal delay={150} className="glass glow-hover rounded-2xl p-8">
