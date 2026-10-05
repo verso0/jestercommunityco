@@ -122,6 +122,36 @@ function CopyButton({ value }: { value: string }) {
   );
 }
 
+function Lightbox({ shot, onClose }: { shot: (typeof workShots)[number]; onClose: () => void }) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
+  }, [onClose]);
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/90 p-4 backdrop-blur-md sm:p-8" onClick={onClose} role="dialog" aria-modal="true">
+      <div
+        className="reveal in glass mouse-tilt relative max-h-full w-full max-w-4xl overflow-y-auto rounded-2xl border border-neon/30 p-3 shadow-[0_0_60px_-10px_var(--neon)] sm:p-5"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button onClick={onClose} aria-label="Close picture" className="absolute right-4 top-4 z-10 rounded-full border border-border bg-background/80 p-2 text-muted-foreground transition hover:border-neon hover:text-neon">
+          <X size={18} />
+        </button>
+        <img src={shot.src} alt={shot.caption} className="w-full rounded-xl object-contain" />
+        <div className="px-2 pb-2 pt-4 sm:px-3">
+          <p className="flex items-center gap-2 font-bold text-neon"><Hammer size={15} className="shrink-0" /> {shot.caption}</p>
+          <p className="mt-3 text-muted-foreground">{shot.description}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function TeamCard({ m, i, perRow = 3 }: { m: TeamMember; i: number; perRow?: 2 | 3 | 4 }) {
   return (
     <Reveal delay={(i % perRow) * 120} className="glass glow-hover mouse-tilt rounded-2xl p-7 text-center">
