@@ -217,6 +217,8 @@ function JesterCursor() {
 }
 
 function Index() {
+  const [openShot, setOpenShot] = useState<(typeof workShots)[number] | null>(null);
+
   useEffect(() => {
     const io = new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting && e.target.classList.add("in")), { threshold: 0.15 });
     document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
