@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { MessageCircle, Camera, Heart, Rocket, Handshake, Coffee, Copy, Check, Hammer } from "lucide-react";
+import { MessageCircle, Camera, Heart, Rocket, Handshake, Coffee, Copy, Check, Hammer, X, ZoomIn } from "lucide-react";
 import workShot1 from "@/assets/work-1.jpg.asset.json";
 import workShot2 from "@/assets/work-2.jpg.asset.json";
 import workShot3 from "@/assets/work-3.jpg.asset.json";
