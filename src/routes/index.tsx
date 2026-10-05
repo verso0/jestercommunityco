@@ -117,12 +117,13 @@ function TeamCard({ m, i, perRow = 3 }: { m: TeamMember; i: number; perRow?: 2 |
 }
 
 function TeamGroup({ title, members, perRow = 3, maxW = "max-w-6xl" }: { title: string; members: TeamMember[]; perRow?: 2 | 3 | 4; maxW?: string }) {
+  const cols = { 2: "lg:grid-cols-2", 3: "lg:grid-cols-3", 4: "lg:grid-cols-4" }[perRow];
   return (
     <>
       <Reveal className="mt-16 text-center">
         <h3 className="text-2xl font-extrabold text-amber">{title}</h3>
       </Reveal>
-      <div className={`${maxW} mx-auto mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-${perRow}`}>
+      <div className={`${maxW} mx-auto mt-8 grid gap-6 sm:grid-cols-2 ${cols}`}>
         {members.map((m, i) => <TeamCard key={`${title}-${m.name}`} m={m} i={i} perRow={perRow} />)}
       </div>
     </>
