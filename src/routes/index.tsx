@@ -251,6 +251,7 @@ function Index() {
   return (
     <div className="site-content overflow-x-hidden">
       <JesterCursor />
+      {openShot && <Lightbox shot={openShot} onClose={() => setOpenShot(null)} />}
       {/* Nav */}
       <header className="fixed inset-x-0 top-0 z-50 border-b border-border bg-background/70 backdrop-blur-lg">
         <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
