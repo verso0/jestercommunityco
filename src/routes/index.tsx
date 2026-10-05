@@ -31,13 +31,33 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const team = [
-  { name: "HAMZA", role: "Lead Scripter", bio: "The engine behind the studio. Turns late-night ideas into clean, working systems — and never breaks a sweat doing it. If it runs smoothly, it's his." },
-  { name: "VERSO", role: "3D MODELER/COMMUNITY MANAGER", bio: "Crafts models with obsessive detail by day, keeps the community smiling by night. The friendly bridge between the studio and its players." },
-  { name: "NYXEN", role: "MANAGER/3D MODLER", bio: "Keeps everyone organized and on schedule, then jumps straight into modeling. The planner with an artist's eye for worlds that beg to be explored." },
-  { name: "BUDDI", role: "LEAD MODEL DESIGNER/3D MODELER", bio: "Defines the look of everything — shapes, colors, style. A perfectionist who won't ship a model until it feels exactly right." },
-  { name: "GROZA", role: "MODERATOR", bio: "Keeps the community safe, fair, and fun. Calm, sharp, and always paying attention — the guardian of the vibes." },
+type TeamMember = { name: string; role: string; bio: string };
+
+const founders: TeamMember[] = [
+  { name: "VERSO", role: "FOUNDER", bio: "Crafts models with obsessive detail by day, keeps the community smiling by night. The friendly bridge between the studio and its players." },
+  { name: "NYXEN", role: "FOUNDER", bio: "Keeps everyone organized and on schedule, then jumps straight into modeling. The planner with an artist's eye for worlds that beg to be explored." },
+  { name: "BUDDI", role: "FOUNDER", bio: "Defines the look of everything — shapes, colors, style. A perfectionist who won't ship a model until it feels exactly right." },
+  { name: "GROZA", role: "FOUNDER", bio: "Keeps the community safe, fair, and fun. Calm, sharp, and always paying attention — the guardian of the vibes." },
+];
+
+const developers: TeamMember[] = [
+  { name: "HAMZA", role: "LEAD SCRIPTER", bio: "The engine behind the studio. Turns late-night ideas into clean, working systems — and never breaks a sweat doing it. If it runs smoothly, it's his." },
+  { name: "VERSO", role: "DEVELOPER", bio: "Crafts models with obsessive detail by day, keeps the community smiling by night. The friendly bridge between the studio and its players." },
+  { name: "NYXEN", role: "DEVELOPER", bio: "Keeps everyone organized and on schedule, then jumps straight into modeling. The planner with an artist's eye for worlds that beg to be explored." },
+  { name: "BUDDI", role: "DEVELOPER", bio: "Defines the look of everything — shapes, colors, style. A perfectionist who won't ship a model until it feels exactly right." },
+  { name: "GROZA", role: "DEVELOPER", bio: "Keeps the community safe, fair, and fun. Calm, sharp, and always paying attention — the guardian of the vibes." },
+  { name: "VEE", role: "DEVELOPER", bio: "From running the feed to writing code, Vee does a bit of everything — the all-rounder who's always shipping something new." },
+];
+
+const socialTeam: TeamMember[] = [
   { name: "VEE", role: "SOCIAL MEDIA MANAGER", bio: "The voice of Jester Studios. Posts, hype, and announcements — lives online so the community always knows what's coming next." },
+  { name: "APRIL", role: "SOCIAL MEDIA MANAGER • EDITOR", bio: "Edits the videos, cuts the highlights, and keeps the feed alive. Fresh eyes behind Jester's content — quick with a meme and quicker with the render queue." },
+];
+
+const collaborators: TeamMember[] = [
+  { name: "BACAN", role: "SCRIPTER", bio: "Scripting muscle from Angoor Studios. Builds the systems behind the scenes and makes sure every mechanic feels snappy." },
+  { name: "BLADE", role: "SCRIPTER", bio: "Also from Angoor Studios. A scripter who loves clean logic and smooth gameplay — if it breaks, Blade has already fixed it." },
+  { name: "SAM", role: "3D MODELER", bio: "The modeler from Angoor Studios. Shapes props and scenes with care, bringing extra polish to every corner of our worlds." },
 ];
 
 function Reveal({ children, className = "", delay = 0 }: { children: ReactNode; className?: string; delay?: number }) {
@@ -80,6 +100,32 @@ function CopyButton({ value }: { value: string }) {
       className="shrink-0 rounded-lg border border-border p-2 text-muted-foreground transition hover:border-neon hover:text-neon">
       {copied ? <Check size={16} className="text-neon" /> : <Copy size={16} />}
     </button>
+  );
+}
+
+function TeamCard({ m, i, perRow = 3 }: { m: TeamMember; i: number; perRow?: 2 | 3 | 4 }) {
+  return (
+    <Reveal delay={(i % perRow) * 120} className="glass glow-hover mouse-tilt rounded-2xl p-7 text-center">
+      <div className="heartbeat mx-auto h-24 w-24 rounded-full" style={{ ["--d" as string]: i }}>
+        <div className="flex h-full w-full items-center justify-center rounded-full bg-gradient-to-br from-primary to-neon/60 text-3xl">🃏</div>
+      </div>
+      <h3 className="mt-6 text-lg font-bold">{m.name}</h3>
+      <span className="mt-2 inline-block rounded-full bg-amber/15 px-3 py-1 text-xs font-bold uppercase tracking-wide text-amber">{m.role}</span>
+      <p className="mt-4 text-sm text-muted-foreground">{m.bio}</p>
+    </Reveal>
+  );
+}
+
+function TeamGroup({ title, members, perRow = 3, maxW = "max-w-6xl" }: { title: string; members: TeamMember[]; perRow?: 2 | 3 | 4; maxW?: string }) {
+  return (
+    <>
+      <Reveal className="mt-16 text-center">
+        <h3 className="text-2xl font-extrabold text-amber">{title}</h3>
+      </Reveal>
+      <div className={`${maxW} mx-auto mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-${perRow}`}>
+        {members.map((m, i) => <TeamCard key={`${title}-${m.name}`} m={m} i={i} perRow={perRow} />)}
+      </div>
+    </>
   );
 }
 
@@ -323,19 +369,26 @@ function Index() {
       <section id="team" className="py-28">
         <div className="mx-auto max-w-6xl px-5">
           <Reveal className="text-center">
-            <h2 className="text-3xl font-extrabold sm:text-5xl">Meet the <span className="text-neon">6 Creators</span></h2>
+            <h2 className="text-3xl font-extrabold sm:text-5xl">Meet the <span className="text-neon">Jester Crew</span></h2>
+          </Reveal>
+          <TeamGroup title="Founders" members={founders} perRow={4} />
+          <TeamGroup title="Developers" members={developers} perRow={3} />
+          <TeamGroup title="Social Media" members={socialTeam} perRow={2} maxW="max-w-4xl" />
+        </div>
+      </section>
+
+      {/* Ongoing Collaboration */}
+      <section id="collab" className="bg-surface py-28">
+        <div className="mx-auto max-w-6xl px-5">
+          <Reveal className="text-center">
+            <p className="font-bold uppercase tracking-widest text-amber text-sm">Ongoing Collaboration</p>
+            <h2 className="mt-3 text-3xl font-extrabold sm:text-5xl">In Partnership with <span className="text-gradient">Angoor Studios</span></h2>
+            <p className="mx-auto mt-5 max-w-2xl text-lg text-muted-foreground">
+              Talented creators we're teaming up with on current and future projects.
+            </p>
           </Reveal>
           <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {team.map((m, i) => (
-              <Reveal key={m.name} delay={(i % 3) * 120} className="glass glow-hover mouse-tilt rounded-2xl p-7 text-center">
-                <div className="heartbeat mx-auto h-24 w-24 rounded-full" style={{ ["--d" as string]: i }}>
-                  <div className="flex h-full w-full items-center justify-center rounded-full bg-gradient-to-br from-primary to-neon/60 text-3xl">🃏</div>
-                </div>
-                <h3 className="mt-6 text-lg font-bold">{m.name}</h3>
-                <span className="mt-2 inline-block rounded-full bg-amber/15 px-3 py-1 text-xs font-bold uppercase tracking-wide text-amber">{m.role}</span>
-                <p className="mt-4 text-sm text-muted-foreground">{m.bio}</p>
-              </Reveal>
-            ))}
+            {collaborators.map((m, i) => <TeamCard key={m.name} m={m} i={i} perRow={3} />)}
           </div>
         </div>
       </section>
