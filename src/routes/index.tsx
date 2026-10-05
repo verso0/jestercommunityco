@@ -340,10 +340,13 @@ function Index() {
           <div className="mt-14 grid gap-6 sm:grid-cols-2">
             {workShots.map((shot, i) => (
               <Reveal key={shot.src} delay={(i % 2) * 120} className="glass glow-hover mouse-tilt group rounded-2xl p-2">
-                <div className="overflow-hidden rounded-xl">
+                <button onClick={() => setOpenShot(shot)} className="relative block w-full cursor-pointer overflow-hidden rounded-xl" aria-label={`Open ${shot.caption}`}>
                   <img src={shot.src} alt={`Work in progress by Jester Studios — ${shot.caption}`} loading="lazy"
                     className="aspect-video w-full object-cover transition duration-500 group-hover:scale-[1.04]" />
-                </div>
+                  <span className="absolute inset-0 flex items-center justify-center bg-background/0 text-transparent transition duration-300 group-hover:bg-background/40 group-hover:text-neon">
+                    <ZoomIn size={36} />
+                  </span>
+                </button>
                 <p className="flex items-center gap-2 px-3 py-3 text-sm text-muted-foreground">
                   <Hammer size={14} className="shrink-0 text-neon" /> {shot.caption}
                 </p>
