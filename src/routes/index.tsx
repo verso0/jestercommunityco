@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { MessageCircle, Camera, Heart, Rocket, Handshake, Coffee, Copy, Check, Hammer } from "lucide-react";
+import { MessageCircle, Camera, Heart, Rocket, Handshake, Coffee, Copy, Check, Hammer, X, ZoomIn } from "lucide-react";
 import workShot1 from "@/assets/work-1.jpg.asset.json";
 import workShot2 from "@/assets/work-2.jpg.asset.json";
 import workShot3 from "@/assets/work-3.jpg.asset.json";
@@ -11,10 +11,30 @@ const INSTAGRAM = "https://www.instagram.com/jestercommunity.co/";
 const ROBLOX = "https://www.roblox.com/groups";
 
 const workShots = [
-  { src: workShot1.url, caption: "Forest environment — terrain, foliage & props" },
-  { src: workShot2.url, caption: "Beachside café build — models & lighting" },
-  { src: workShot3.url, caption: "Park detail — swing, lanterns & custom props" },
-  { src: workShot4.url, caption: "Garden pavilion — modeling & atmosphere" },
+  {
+    src: workShot1.url,
+    caption: "Forest environment — terrain, foliage & props",
+    description:
+      "A quiet corner of a hand-shaped forest. Every tree, rock and patch of foliage is placed manually — no stock terrain. A resting bench with a warm cup of coffee waits under the canopy, showing how we layer small, personal props into big environments to make a world feel lived-in.",
+  },
+  {
+    src: workShot2.url,
+    caption: "Beachside café build — models & lighting",
+    description:
+      "A café built right on the shoreline. The building, furniture, counters and signage are all modeled from scratch in Roblox Studio, with custom lighting tuned for a warm, coastal evening mood. This is an example of how we approach complete, explorable buildings — not just decoration.",
+  },
+  {
+    src: workShot3.url,
+    caption: "Park detail — swing, lanterns & custom props",
+    description:
+      "A park scene focused on the little details: a swing set, hanging lanterns and custom props scattered through the greenery. Warm light pools around each lantern to guide the player's eye — this is the kind of atmosphere work we put into every playable area.",
+  },
+  {
+    src: workShot4.url,
+    caption: "Garden pavilion — modeling & atmosphere",
+    description:
+      "A garden pavilion surrounded by planted greenery, built to test how our models read in full scenes. The structure, plants and surrounding props are all custom — it's a small snapshot of the modeling and atmosphere pipeline behind our debut game.",
+  },
 ];
 
 export const Route = createFileRoute("/")({
@@ -102,6 +122,36 @@ function CopyButton({ value }: { value: string }) {
   );
 }
 
+function Lightbox({ shot, onClose }: { shot: (typeof workShots)[number]; onClose: () => void }) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
+  }, [onClose]);
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/90 p-4 backdrop-blur-md sm:p-8" onClick={onClose} role="dialog" aria-modal="true">
+      <div
+        className="reveal in glass mouse-tilt relative max-h-full w-full max-w-4xl overflow-y-auto rounded-2xl border border-neon/30 p-3 shadow-[0_0_60px_-10px_var(--neon)] sm:p-5"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button onClick={onClose} aria-label="Close picture" className="absolute right-4 top-4 z-10 rounded-full border border-border bg-background/80 p-2 text-muted-foreground transition hover:border-neon hover:text-neon">
+          <X size={18} />
+        </button>
+        <img src={shot.src} alt={shot.caption} className="w-full rounded-xl object-contain" />
+        <div className="px-2 pb-2 pt-4 sm:px-3">
+          <p className="flex items-center gap-2 font-bold text-neon"><Hammer size={15} className="shrink-0" /> {shot.caption}</p>
+          <p className="mt-3 text-muted-foreground">{shot.description}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function TeamCard({ m, i, perRow = 3 }: { m: TeamMember; i: number; perRow?: 2 | 3 | 4 }) {
   return (
     <Reveal delay={(i % perRow) * 120} className="glass glow-hover mouse-tilt rounded-2xl p-7 text-center">
@@ -167,6 +217,8 @@ function JesterCursor() {
 }
 
 function Index() {
+  const [openShot, setOpenShot] = useState<(typeof workShots)[number] | null>(null);
+
   useEffect(() => {
     const io = new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting && e.target.classList.add("in")), { threshold: 0.15 });
     document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
@@ -199,6 +251,7 @@ function Index() {
   return (
     <div className="site-content overflow-x-hidden">
       <JesterCursor />
+      {openShot && <Lightbox shot={openShot} onClose={() => setOpenShot(null)} />}
       {/* Nav */}
       <header className="fixed inset-x-0 top-0 z-50 border-b border-border bg-background/70 backdrop-blur-lg">
         <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
@@ -288,16 +341,20 @@ function Index() {
           <div className="mt-14 grid gap-6 sm:grid-cols-2">
             {workShots.map((shot, i) => (
               <Reveal key={shot.src} delay={(i % 2) * 120} className="glass glow-hover mouse-tilt group rounded-2xl p-2">
-                <div className="overflow-hidden rounded-xl">
+                <button onClick={() => setOpenShot(shot)} className="relative block w-full cursor-pointer overflow-hidden rounded-xl" aria-label={`Open ${shot.caption}`}>
                   <img src={shot.src} alt={`Work in progress by Jester Studios — ${shot.caption}`} loading="lazy"
                     className="aspect-video w-full object-cover transition duration-500 group-hover:scale-[1.04]" />
-                </div>
+                  <span className="absolute inset-0 flex items-center justify-center bg-background/0 text-transparent transition duration-300 group-hover:bg-background/40 group-hover:text-neon">
+                    <ZoomIn size={36} />
+                  </span>
+                </button>
                 <p className="flex items-center gap-2 px-3 py-3 text-sm text-muted-foreground">
                   <Hammer size={14} className="shrink-0 text-neon" /> {shot.caption}
                 </p>
               </Reveal>
             ))}
           </div>
+          <p className="mt-8 text-center text-sm text-muted-foreground">Click any picture to open it up close, with a note about the environment you're looking at.</p>
         </div>
       </section>
 
