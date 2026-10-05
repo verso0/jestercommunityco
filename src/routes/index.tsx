@@ -11,10 +11,30 @@ const INSTAGRAM = "https://www.instagram.com/jestercommunity.co/";
 const ROBLOX = "https://www.roblox.com/groups";
 
 const workShots = [
-  { src: workShot1.url, caption: "Forest environment — terrain, foliage & props" },
-  { src: workShot2.url, caption: "Beachside café build — models & lighting" },
-  { src: workShot3.url, caption: "Park detail — swing, lanterns & custom props" },
-  { src: workShot4.url, caption: "Garden pavilion — modeling & atmosphere" },
+  {
+    src: workShot1.url,
+    caption: "Forest environment — terrain, foliage & props",
+    description:
+      "A quiet corner of a hand-shaped forest. Every tree, rock and patch of foliage is placed manually — no stock terrain. A resting bench with a warm cup of coffee waits under the canopy, showing how we layer small, personal props into big environments to make a world feel lived-in.",
+  },
+  {
+    src: workShot2.url,
+    caption: "Beachside café build — models & lighting",
+    description:
+      "A café built right on the shoreline. The building, furniture, counters and signage are all modeled from scratch in Roblox Studio, with custom lighting tuned for a warm, coastal evening mood. This is an example of how we approach complete, explorable buildings — not just decoration.",
+  },
+  {
+    src: workShot3.url,
+    caption: "Park detail — swing, lanterns & custom props",
+    description:
+      "A park scene focused on the little details: a swing set, hanging lanterns and custom props scattered through the greenery. Warm light pools around each lantern to guide the player's eye — this is the kind of atmosphere work we put into every playable area.",
+  },
+  {
+    src: workShot4.url,
+    caption: "Garden pavilion — modeling & atmosphere",
+    description:
+      "A garden pavilion surrounded by planted greenery, built to test how our models read in full scenes. The structure, plants and surrounding props are all custom — it's a small snapshot of the modeling and atmosphere pipeline behind our debut game.",
+  },
 ];
 
 export const Route = createFileRoute("/")({
