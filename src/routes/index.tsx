@@ -354,6 +354,7 @@ function Index() {
               </Reveal>
             ))}
           </div>
+          <p className="mt-8 text-center text-sm text-muted-foreground">Click any picture to open it up close, with a note about the environment you're looking at.</p>
         </div>
       </section>
 
