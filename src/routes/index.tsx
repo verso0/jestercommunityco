@@ -46,7 +46,6 @@ const developers: TeamMember[] = [
   { name: "NYXEN", role: "DEVELOPER", bio: "Keeps everyone organized and on schedule, then jumps straight into modeling. The planner with an artist's eye for worlds that beg to be explored." },
   { name: "BUDDI", role: "DEVELOPER", bio: "Defines the look of everything — shapes, colors, style. A perfectionist who won't ship a model until it feels exactly right." },
   { name: "GROZA", role: "DEVELOPER", bio: "Keeps the community safe, fair, and fun. Calm, sharp, and always paying attention — the guardian of the vibes." },
-  { name: "VEE", role: "DEVELOPER", bio: "From running the feed to writing code, Vee does a bit of everything — the all-rounder who's always shipping something new." },
 ];
 
 const socialTeam: TeamMember[] = [
