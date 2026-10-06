@@ -15,6 +15,12 @@ import avNyxen from "@/assets/avatar-nyxen.jpg.asset.json";
 import avVerso from "@/assets/avatar-verso.jpg.asset.json";
 import avSam from "@/assets/avatar-sam.jpg.asset.json";
 import avApril from "@/assets/avatar-april.jpg.asset.json";
+import progressAfter1 from "@/assets/progress-after-1.jpg.asset.json";
+import progressAfter2 from "@/assets/progress-after-2.jpg.asset.json";
+import progressAfter3 from "@/assets/progress-after-3.jpg.asset.json";
+import progressAfter4 from "@/assets/progress-after-4.jpg.asset.json";
+import progressAfter5 from "@/assets/progress-after-5.jpg.asset.json";
+import progressAfter6 from "@/assets/progress-after-6.jpg.asset.json";
 
 const AVATARS: Record<string, string> = {
   GROZA: avGroza.url, BUDDI: avBuddi.url, BLADE: avBlade.url, BACAN: avBacan.url, VEE: avVee.url,
@@ -50,6 +56,15 @@ const workShots = [
     description:
       "A garden pavilion surrounded by planted greenery, built to test how our models read in full scenes. The structure, plants and surrounding props are all custom — it's a small snapshot of the modeling and atmosphere pipeline behind our debut game.",
   },
+];
+
+const updatedProgressShots = [
+  { src: progressAfter1.url, caption: "Updated woodland path — deeper atmosphere & lighting", description: "The updated woodland now uses denser foliage, richer shadows and carefully placed lantern light to turn a simple path and bench into a more immersive nighttime scene." },
+  { src: progressAfter2.url, caption: "Cherry blossom campfire — a new social space", description: "A new gathering spot framed by glowing cherry trees, layered grass and warm firelight, where players can stop, meet and spend time together." },
+  { src: progressAfter3.url, caption: "Garden pavilion — expanded and brought to life", description: "The pavilion area has been expanded with seating, curtains, flowers, string lights and a stronger garden composition, making the build feel more complete and ready to explore." },
+  { src: progressAfter4.url, caption: "Romantic garden feature — new interactive detail", description: "This new floral arch and hanging seat add a memorable focal point. Custom flowers, decorative gifts and drifting petals give the area its own personality." },
+  { src: progressAfter5.url, caption: "Forest scale update — larger trees and pathways", description: "The forest has gained much larger trees, clearer pathways and more varied lighting, making players feel surrounded by the environment rather than simply walking past it." },
+  { src: progressAfter6.url, caption: "Finished park corner — lighting, seating & planting", description: "A polished park corner combines layered trees, flower beds, a bench and a strong lantern landmark, reflecting the latest pass on atmosphere and environmental detail." },
 ];
 
 export const Route = createFileRoute("/")({
@@ -276,7 +291,7 @@ function Index() {
         <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
           <a href="#" className="font-display text-lg font-extrabold">🃏 Jester<span className="text-neon">.</span></a>
           <div className="hidden gap-7 text-sm text-muted-foreground md:flex">
-            {[["About", "#about"], ["Project", "#project"], ["Work", "#work"], ["Team", "#team"], ["Support", "#support"]].map(([l, h]) => (
+            {[["About", "#about"], ["Project", "#project"], ["Progress", "#progress"], ["Work", "#work"], ["Team", "#team"], ["Support", "#support"]].map(([l, h]) => (
               <a key={h} href={h} className="hover:text-neon transition">{l}</a>
             ))}
           </div>
