@@ -15,12 +15,12 @@ import avNyxen from "@/assets/avatar-nyxen.jpg.asset.json";
 import avVerso from "@/assets/avatar-verso.jpg.asset.json";
 import avSam from "@/assets/avatar-sam.jpg.asset.json";
 import avApril from "@/assets/avatar-april.jpg.asset.json";
-import progressAfter1 from "@/assets/progress-after-1.jpg.asset.json";
-import progressAfter2 from "@/assets/progress-after-2.jpg.asset.json";
-import progressAfter3 from "@/assets/progress-after-3.jpg.asset.json";
-import progressAfter4 from "@/assets/progress-after-4.jpg.asset.json";
-import progressAfter5 from "@/assets/progress-after-5.jpg.asset.json";
-import progressAfter6 from "@/assets/progress-after-6.jpg.asset.json";
+import progressAfter1 from "@/assets/progress-after-full-1.jpg.asset.json";
+import progressAfter2 from "@/assets/progress-after-full-2.jpg.asset.json";
+import progressAfter3 from "@/assets/progress-after-full-3.jpg.asset.json";
+import progressAfter4 from "@/assets/progress-after-full-4.jpg.asset.json";
+import progressAfter5 from "@/assets/progress-after-full-5.jpg.asset.json";
+import progressAfter6 from "@/assets/progress-after-full-6.jpg.asset.json";
 
 const AVATARS: Record<string, string> = {
   GROZA: avGroza.url, BUDDI: avBuddi.url, BLADE: avBlade.url, BACAN: avBacan.url, VEE: avVee.url,
@@ -400,7 +400,7 @@ function Index() {
             {updatedProgressShots.map((shot, i) => (
               <Reveal key={shot.src} delay={(i % 3) * 100} className="glass glow-hover mouse-tilt group rounded-2xl p-2">
                 <button onClick={() => setOpenShot(shot)} className="relative block w-full cursor-pointer overflow-hidden rounded-xl" aria-label={`Open updated view: ${shot.caption}`}>
-                  <img src={shot.src} alt={`Updated Konnect Us build — ${shot.caption}`} loading="lazy" className="aspect-video w-full object-cover transition duration-500 group-hover:scale-[1.04]" />
+                  <img src={shot.src} alt={`Updated Konnect Us build — ${shot.caption}`} loading="lazy" className="aspect-video w-full object-contain transition duration-500 group-hover:scale-[1.04]" />
                   <span className="absolute inset-0 flex items-center justify-center bg-background/0 text-transparent transition duration-300 group-hover:bg-background/40 group-hover:text-neon"><ZoomIn size={34} /></span>
                 </button>
                 <p className="flex items-center gap-2 px-3 py-3 text-sm text-muted-foreground"><Rocket size={14} className="shrink-0 text-neon" /> {shot.caption}</p>
