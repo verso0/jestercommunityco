@@ -5,6 +5,21 @@ import workShot1 from "@/assets/work-1.jpg.asset.json";
 import workShot2 from "@/assets/work-2.jpg.asset.json";
 import workShot3 from "@/assets/work-3.jpg.asset.json";
 import workShot4 from "@/assets/work-4.jpg.asset.json";
+import avGroza from "@/assets/avatar-groza.jpg.asset.json";
+import avBuddi from "@/assets/avatar-buddi.jpg.asset.json";
+import avBlade from "@/assets/avatar-blade.jpg.asset.json";
+import avBacan from "@/assets/avatar-bacan.jpg.asset.json";
+import avVee from "@/assets/avatar-vee.jpg.asset.json";
+import avHamza from "@/assets/avatar-hamza.jpg.asset.json";
+import avNyxen from "@/assets/avatar-nyxen.jpg.asset.json";
+import avVerso from "@/assets/avatar-verso.jpg.asset.json";
+import avSam from "@/assets/avatar-sam.jpg.asset.json";
+import avApril from "@/assets/avatar-april.jpg.asset.json";
+
+const AVATARS: Record<string, string> = {
+  GROZA: avGroza.url, BUDDI: avBuddi.url, BLADE: avBlade.url, BACAN: avBacan.url, VEE: avVee.url,
+  HAMZA: avHamza.url, NYXEN: avNyxen.url, VERSO: avVerso.url, SAM: avSam.url, APRIL: avApril.url,
+};
 
 const DISCORD = "https://discord.gg/wXTNsqUJm";
 const INSTAGRAM = "https://www.instagram.com/jestercommunity.co/";
@@ -156,7 +171,11 @@ function TeamCard({ m, i, perRow = 3 }: { m: TeamMember; i: number; perRow?: 2 |
   return (
     <Reveal delay={(i % perRow) * 120} className="glass glow-hover mouse-tilt rounded-2xl p-7 text-center">
       <div className="heartbeat mx-auto h-24 w-24 rounded-full" style={{ ["--d" as string]: i }}>
-        <div className="flex h-full w-full items-center justify-center rounded-full bg-gradient-to-br from-primary to-neon/60 text-3xl">🃏</div>
+        {AVATARS[m.name] ? (
+          <img src={AVATARS[m.name]} alt={`${m.name} avatar`} loading="lazy" className="h-full w-full rounded-full object-cover ring-2 ring-primary/60" />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center rounded-full bg-gradient-to-br from-primary to-neon/60 text-3xl">🃏</div>
+        )}
       </div>
       <h3 className="mt-6 text-lg font-bold">{m.name}</h3>
       <span className="mt-2 inline-block rounded-full bg-amber/15 px-3 py-1 text-xs font-bold uppercase tracking-wide text-amber">{m.role}</span>
