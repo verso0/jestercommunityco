@@ -21,6 +21,8 @@ import progressAfter3 from "@/assets/progress-after-full-3.jpg.asset.json";
 import progressAfter4 from "@/assets/progress-after-full-4.jpg.asset.json";
 import progressAfter5 from "@/assets/progress-after-full-5.jpg.asset.json";
 import progressAfter6 from "@/assets/progress-after-full-6.jpg.asset.json";
+import teaserVideo from "@/assets/teaser-1.mp4.asset.json";
+import teaserPoster from "@/assets/teaser-1-poster.jpg.asset.json";
 
 const AVATARS: Record<string, string> = {
   GROZA: avGroza.url, BUDDI: avBuddi.url, BLADE: avBlade.url, BACAN: avBacan.url, VEE: avVee.url,
@@ -291,7 +293,7 @@ function Index() {
         <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
           <a href="#" className="font-display text-lg font-extrabold">🃏 Jester<span className="text-neon">.</span></a>
           <div className="hidden gap-7 text-sm text-muted-foreground md:flex">
-            {[["About", "#about"], ["Project", "#project"], ["Progress", "#progress"], ["Work", "#work"], ["Team", "#team"], ["Support", "#support"]].map(([l, h]) => (
+            {[["About", "#about"], ["Project", "#project"], ["Progress", "#progress"], ["Work", "#work"], ["Teaser", "#teaser"], ["Team", "#team"], ["Support", "#support"]].map(([l, h]) => (
               <a key={h} href={h} className="hover:text-neon transition">{l}</a>
             ))}
           </div>
@@ -438,6 +440,37 @@ function Index() {
             ))}
           </div>
           <p className="mt-8 text-center text-sm text-muted-foreground">Click any picture to open it up close, with a note about the environment you're looking at.</p>
+        </div>
+      </section>
+
+      {/* Teaser 1 */}
+      <section id="teaser" className="bg-surface py-28 scroll-mt-20">
+        <div className="mx-auto max-w-5xl px-5">
+          <Reveal className="text-center">
+            <p className="font-bold uppercase tracking-widest text-neon text-sm">Official Teaser • Konnect Us</p>
+            <h2 className="mt-3 text-3xl font-extrabold sm:text-5xl">Teaser <span className="text-gradient">1</span></h2>
+            <p className="mx-auto mt-5 max-w-3xl text-lg text-muted-foreground">
+              Our very first teaser for Konnect Us. It opens on the glowing Konnect Us sign above our nighttime park — cherry blossoms, lanterns and a campfire under the stars — before fading into "Coming Soon: a new Roblox experience," signed by the Jester Studios jester himself. This is only the beginning: Teaser 2 is on its way, and after that, the final trailer will reveal the full world we've been building.
+            </p>
+          </Reveal>
+          <Reveal className="glow-border isolate mt-12" delay={120}>
+            <div className="mouse-tilt overflow-hidden rounded-2xl bg-background p-2">
+              <video
+                className="aspect-video w-full rounded-xl"
+                src={teaserVideo.url}
+                poster={teaserPoster.url}
+                controls
+                playsInline
+                preload="metadata"
+                aria-label="Konnect Us — Teaser 1 by Jester Studios"
+              />
+            </div>
+          </Reveal>
+          <Reveal className="mt-8 flex flex-wrap items-center justify-center gap-3" delay={200}>
+            <span className="rounded-full bg-neon/15 px-3 py-1 text-xs font-bold text-neon">TEASER 1 — OUT NOW</span>
+            <span className="rounded-full bg-muted px-3 py-1 text-xs font-bold text-muted-foreground">TEASER 2 — COMING SOON</span>
+            <span className="rounded-full bg-amber/15 px-3 py-1 text-xs font-bold text-amber">FINAL TRAILER — AFTER THAT</span>
+          </Reveal>
         </div>
       </section>
 
