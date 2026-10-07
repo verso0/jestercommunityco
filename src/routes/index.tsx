@@ -93,16 +93,16 @@ const founders: TeamMember[] = [
 ];
 
 const developers: TeamMember[] = [
-  { name: "HAMZA", role: "LEAD SCRIPTER", bio: "The engine behind the studio. Turns late-night ideas into clean, working systems — and never breaks a sweat doing it. If it runs smoothly, it's his." },
-  { name: "VERSO", role: "DEVELOPER", bio: "Crafts models with obsessive detail by day, keeps the community smiling by night. The friendly bridge between the studio and its players." },
-  { name: "NYXEN", role: "DEVELOPER", bio: "Keeps everyone organized and on schedule, then jumps straight into modeling. The planner with an artist's eye for worlds that beg to be explored." },
-  { name: "BUDDI", role: "DEVELOPER", bio: "Defines the look of everything — shapes, colors, style. A perfectionist who won't ship a model until it feels exactly right." },
-  { name: "GROZA", role: "DEVELOPER", bio: "Keeps the community safe, fair, and fun. Calm, sharp, and always paying attention — the guardian of the vibes." },
+  { name: "HAMZA", role: "LEAD SCRIPTER/MAP DESIGNER", bio: "The engine behind the studio. Turns late-night ideas into clean, working systems — and never breaks a sweat doing it. If it runs smoothly, it's his." },
+  { name: "VERSO", role: "DEVELOPER/MAP DESIGNER/SCRIPTER/GUI DESIGNER", bio: "Crafts models with obsessive detail by day, keeps the community smiling by night. The friendly bridge between the studio and its players." },
+  { name: "NYXEN", role: "DEVELOPER/MANAGER", bio: "Keeps everyone organized and on schedule, then jumps straight into modeling. The planner with an artist's eye for worlds that beg to be explored." },
+  { name: "BUDDI", role: "DEVELOPER/MAP DESIGNER/3D MODEL DESIGNER", bio: "Defines the look of everything — shapes, colors, style. A perfectionist who won't ship a model until it feels exactly right." },
+  { name: "GROZA", role: "MODERATOR", bio: "Keeps the community safe, fair, and fun. Calm, sharp, and always paying attention — the guardian of the vibes." },
 ];
 
 const socialTeam: TeamMember[] = [
-  { name: "VEE", role: "SOCIAL MEDIA MANAGER", bio: "The voice of Jester Studios. Posts, hype, and announcements — lives online so the community always knows what's coming next." },
-  { name: "APRIL", role: "SOCIAL MEDIA MANAGER • EDITOR", bio: "Edits the videos, cuts the highlights, and keeps the feed alive. Fresh eyes behind Jester's content — quick with a meme and quicker with the render queue." },
+  { name: "VEE", role: "SOCIAL MEDIA MANAGER/CINEMATOGRAPHER", bio: "The voice of Jester Studios. Posts, hype, and announcements — lives online so the community always knows what's coming next." },
+  { name: "APRIL", role: "SOCIAL MEDIA MANAGER/LEAD EDITOR", bio: "Edits the videos, cuts the highlights, and keeps the feed alive. Fresh eyes behind Jester's content — quick with a meme and quicker with the render queue." },
 ];
 
 const collaborators: TeamMember[] = [
