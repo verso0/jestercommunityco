@@ -185,7 +185,7 @@ function Lightbox({ shot, onClose }: { shot: (typeof workShots)[number]; onClose
   );
 }
 
-function TeamCard({ m, i, perRow = 3 }: { m: TeamMember; i: number; perRow?: 2 | 3 | 4 }) {
+function TeamCard({ m, i, perRow = 3 }: { m: TeamMember; i: number; perRow?: 2 | 3 | 4 | 5 }) {
   return (
     <Reveal delay={(i % perRow) * 120} className="glass glow-hover mouse-tilt rounded-2xl p-7 text-center">
       <div className="heartbeat mx-auto h-24 w-24 rounded-full" style={{ ["--d" as string]: i }}>
@@ -202,8 +202,8 @@ function TeamCard({ m, i, perRow = 3 }: { m: TeamMember; i: number; perRow?: 2 |
   );
 }
 
-function TeamGroup({ title, members, perRow = 3, maxW = "max-w-6xl" }: { title: string; members: TeamMember[]; perRow?: 2 | 3 | 4; maxW?: string }) {
-  const cols = { 2: "lg:grid-cols-2", 3: "lg:grid-cols-3", 4: "lg:grid-cols-4" }[perRow];
+function TeamGroup({ title, members, perRow = 3, maxW = "max-w-6xl" }: { title: string; members: TeamMember[]; perRow?: 2 | 3 | 4 | 5; maxW?: string }) {
+  const cols = { 2: "lg:grid-cols-2", 3: "lg:grid-cols-3", 4: "lg:grid-cols-4", 5: "lg:grid-cols-5" }[perRow];
   return (
     <>
       <Reveal className="mt-16 text-center">
@@ -545,7 +545,7 @@ function Index() {
           <Reveal className="text-center">
             <h2 className="text-3xl font-extrabold sm:text-5xl">Meet the <span className="text-neon">Jester Crew</span></h2>
           </Reveal>
-          <TeamGroup title="Founders" members={founders} perRow={4} />
+          <TeamGroup title="Founders" members={founders} perRow={5} maxW="max-w-7xl" />
           <TeamGroup title="Developers" members={developers} perRow={3} />
           <TeamGroup title="Social Media" members={socialTeam} perRow={2} maxW="max-w-4xl" />
         </div>
