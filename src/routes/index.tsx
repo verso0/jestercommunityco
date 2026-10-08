@@ -90,6 +90,7 @@ const founders: TeamMember[] = [
   { name: "NYXEN", role: "FOUNDER", bio: "Keeps everyone organized and on schedule, then jumps straight into modeling. The planner with an artist's eye for worlds that beg to be explored." },
   { name: "BUDDI", role: "FOUNDER", bio: "Defines the look of everything — shapes, colors, style. A perfectionist who won't ship a model until it feels exactly right." },
   { name: "GROZA", role: "FOUNDER", bio: "Keeps the community safe, fair, and fun. Calm, sharp, and always paying attention — the guardian of the vibes." },
+  { name: "HAMZA", role: "FOUNDER", bio: "Helped start the studio and still writes the core scripts himself. Calm under pressure, obsessed with how things run — if it works smoothly and the world feels right, it's his." },
 ];
 
 const developers: TeamMember[] = [
