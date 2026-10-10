@@ -493,7 +493,7 @@ function Index() {
                     flag: "🇵🇰",
                     label: "Pakistan",
                     items: [
-                      { name: "EasyPaisa", value: "03462972377", note: "" },
+                      { name: "EasyPaisa", value: "", note: "Currently unavailable" },
                       { name: "JazzCash", value: "", note: "Currently unavailable" },
                     ],
                   },
@@ -501,7 +501,7 @@ function Index() {
                     flag: "🇮🇳",
                     label: "India",
                     items: [
-                      { name: "UPI", value: "+918780481953", note: "" },
+                      { name: "UPI", value: "", note: "Currently unavailable" },
                     ],
                   },
                   {
