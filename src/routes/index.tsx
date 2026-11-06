@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useRef, useState, type ReactNode } from "react";
-import { MessageCircle, Camera, Heart, Rocket, Handshake, Coffee, Copy, Check, Hammer, X, ZoomIn } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { MessageCircle, Camera, Heart, Handshake, Coffee, Copy, Check, Hammer, X, ZoomIn } from "lucide-react";
+import { useCinema } from "@/components/cinema/useCinema";
+import { Compare, Eyebrow, Loader, Magnetic, Split, Words } from "@/components/cinema/parts";
 import workShot1 from "@/assets/work-1.jpg.asset.json";
 import workShot2 from "@/assets/work-2.jpg.asset.json";
 import workShot3 from "@/assets/work-3.jpg.asset.json";
@@ -22,7 +24,6 @@ import progressAfter3 from "@/assets/progress-after-full-3.jpg.asset.json";
 import progressAfter4 from "@/assets/progress-after-full-4.jpg.asset.json";
 import progressAfter5 from "@/assets/progress-after-full-5.jpg.asset.json";
 import progressAfter6 from "@/assets/progress-after-full-6.jpg.asset.json";
-import { BuildSlider } from "@/components/BuildSlider";
 import { Link } from "@tanstack/react-router";
 import { useSiteData } from "@/lib/site-data";
 import { useAuth } from "@/hooks/use-auth";
@@ -115,25 +116,6 @@ const collaborators: TeamMember[] = [
   { name: "SAM", role: "3D MODELER", bio: "The modeler from Angoor Studios. Shapes props and scenes with care, bringing extra polish to every corner of our worlds." },
 ];
 
-function Reveal({ children, className = "", delay = 0 }: { children: ReactNode; className?: string; delay?: number }) {
-  return <div className={`reveal ${className}`} style={{ transitionDelay: `${delay}ms` }}>{children}</div>;
-}
-
-function Btn({ href, children, variant = "primary" }: { href: string; children: ReactNode; variant?: "primary" | "ghost" | "amber" }) {
-  const styles = {
-    primary: "bg-primary text-primary-foreground shadow-[0_0_30px_-4px_var(--primary)] hover:brightness-110",
-    ghost: "glass text-foreground hover:border-neon/60 hover:text-neon",
-    amber: "bg-amber text-background hover:brightness-110 shadow-[0_0_30px_-6px_var(--amber)]",
-  }[variant];
-  const ext = href.startsWith("http");
-  return (
-    <a href={href} target={ext ? "_blank" : undefined} rel={ext ? "noreferrer" : undefined}
-      className={`inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3 font-bold transition hover:-translate-y-0.5 ${styles}`}>
-      {children}
-    </a>
-  );
-}
-
 function CopyButton({ value }: { value: string }) {
   const [copied, setCopied] = useState(false);
   const copy = async () => {
@@ -172,7 +154,7 @@ function Lightbox({ shot, onClose }: { shot: (typeof workShots)[number]; onClose
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/90 p-4 backdrop-blur-md sm:p-8" onClick={onClose} role="dialog" aria-modal="true">
       <div
-        className="reveal in glass mouse-tilt relative max-h-full w-full max-w-4xl overflow-y-auto rounded-2xl border border-neon/30 p-3 shadow-[0_0_60px_-10px_var(--neon)] sm:p-5"
+        className="lightbox-card glass relative max-h-full w-full max-w-4xl overflow-y-auto rounded-2xl border border-neon/30 p-3 shadow-[0_0_60px_-10px_var(--neon)] sm:p-5"
         onClick={(e) => e.stopPropagation()}
       >
         <button onClick={onClose} aria-label="Close picture" className="absolute right-4 top-4 z-10 rounded-full border border-border bg-background/80 p-2 text-muted-foreground transition hover:border-neon hover:text-neon">
@@ -185,38 +167,6 @@ function Lightbox({ shot, onClose }: { shot: (typeof workShots)[number]; onClose
         </div>
       </div>
     </div>
-  );
-}
-
-function TeamCard({ m, i, perRow = 3 }: { m: TeamMember; i: number; perRow?: 2 | 3 | 4 | 5 }) {
-  return (
-    <Reveal delay={(i % perRow) * 120} className="team-card glass glow-hover mouse-tilt relative rounded-2xl p-7 text-center">
-      <div className="corrupt" aria-hidden="true" />
-      <div className="heartbeat mx-auto h-24 w-24 rounded-full" style={{ ["--d" as string]: i }}>
-        {(m.avatar ?? AVATARS[m.name]) ? (
-          <img src={m.avatar ?? AVATARS[m.name]} alt={`${m.name} avatar`} loading="lazy" className="h-full w-full rounded-full object-cover ring-2 ring-primary/60" />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center rounded-full bg-gradient-to-br from-primary to-neon/60 text-3xl">🃏</div>
-        )}
-      </div>
-      <h3 className="mt-6 text-lg font-bold">{m.name}</h3>
-      <span className="mt-2 inline-block rounded-full bg-amber/15 px-3 py-1 text-xs font-bold uppercase tracking-wide text-amber">{m.role}</span>
-      <p className="mt-4 text-sm text-muted-foreground">{m.bio}</p>
-    </Reveal>
-  );
-}
-
-function TeamGroup({ title, members, perRow = 3, maxW = "max-w-6xl" }: { title: string; members: TeamMember[]; perRow?: 2 | 3 | 4 | 5; maxW?: string }) {
-  const cols = { 2: "lg:grid-cols-2", 3: "lg:grid-cols-3", 4: "lg:grid-cols-4", 5: "lg:grid-cols-5" }[perRow];
-  return (
-    <>
-      <Reveal className="mt-16 text-center">
-        <h3 className="text-2xl font-extrabold text-amber">{title}</h3>
-      </Reveal>
-      <div className={`${maxW} mx-auto mt-8 grid gap-6 sm:grid-cols-2 ${cols}`}>
-        {members.map((m, i) => <TeamCard key={`${title}-${m.name}`} m={m} i={i} perRow={perRow} />)}
-      </div>
-    </>
   );
 }
 
@@ -275,10 +225,62 @@ function JesterCursor() {
   return <div ref={cursorRef} className="jester-cursor" aria-hidden="true"><span>🃏</span></div>;
 }
 
+function TarotCard({ m, i, total }: { m: TeamMember; i: number; total: number }) {
+  const src = m.avatar ?? AVATARS[m.name];
+  const ref = useRef<HTMLDivElement>(null);
+  return (
+    <div
+      ref={ref}
+      className="tarot"
+      style={{ ["--i" as string]: i }}
+      onPointerMove={(e) => {
+        const r = ref.current!.getBoundingClientRect();
+        ref.current!.style.setProperty("--rx", `${((e.clientY - r.top) / r.height - 0.5) * -14}deg`);
+        ref.current!.style.setProperty("--ry", `${((e.clientX - r.left) / r.width - 0.5) * 16}deg`);
+        ref.current!.style.setProperty("--gx", `${((e.clientX - r.left) / r.width) * 100}%`);
+        ref.current!.style.setProperty("--gy", `${((e.clientY - r.top) / r.height) * 100}%`);
+      }}
+      onPointerLeave={() => { ref.current!.style.setProperty("--rx", "0deg"); ref.current!.style.setProperty("--ry", "0deg"); }}
+    >
+      <div className="tarot-inner">
+        <span className="tarot-num">{toRoman(i + 1)} / {toRoman(total)}</span>
+        <div className="tarot-portrait">
+          {src ? <img src={src} alt={`${m.name} avatar`} loading="lazy" /> : <span className="text-5xl">🃏</span>}
+          <span className="tarot-scan" aria-hidden="true" />
+        </div>
+        <h3 className="tarot-name glitch-title" data-text={m.name}>{m.name}</h3>
+        <p className="tarot-role">{m.role.split("/").join(" · ")}</p>
+        <p className="tarot-bio">{m.bio}</p>
+        <span className="tarot-glare" aria-hidden="true" />
+      </div>
+    </div>
+  );
+}
+
+function toRoman(n: number) {
+  return ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"][n - 1] ?? String(n);
+}
+
+function Deck({ title, n, members }: { title: string; n: string; members: TeamMember[] }) {
+  return (
+    <div className="deck">
+      <div className="deck-head" data-rise>
+        <span className="deck-n">{n}</span>
+        <h3 className="deck-title">{title}</h3>
+        <span className="deck-count">{String(members.length).padStart(2, "0")} CARDS</span>
+      </div>
+      <div className="deck-row" data-rise><div data-stagger className="deck-grid">
+        {members.map((m, i) => <TarotCard key={`${title}-${m.name}`} m={m} i={i} total={members.length} />)}
+      </div></div>
+    </div>
+  );
+}
+
 function Index() {
   const [openShot, setOpenShot] = useState<(typeof workShots)[number] | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeId, setActiveId] = useState("");
+  const [loading, setLoading] = useState(true);
   const { data: site } = useSiteData();
   const { user, isAdmin } = useAuth();
   const text = (k: string, d: string) => site?.content[k] ?? d;
@@ -291,294 +293,269 @@ function Index() {
     social: site?.team.social.length ? site.team.social : socialTeam,
     collaborators: site?.team.collaborators.length ? site.team.collaborators : collaborators,
   };
-  // Visitors only receive published slots; fill the rest with "Coming Soon" placeholders.
   const videoSlots = [
     { slot: "teaser1", title: "Teaser 1", description: "", videoUrl: null, thumbUrl: null, published: false },
     { slot: "teaser2", title: "Teaser 2", description: "", videoUrl: null, thumbUrl: null, published: false },
     { slot: "final", title: "Final Trailer", description: "", videoUrl: null, thumbUrl: null, published: false },
   ].map((d) => site?.videos.find((v) => v.slot === d.slot) ?? d);
+  const heroBg = afterShots[1]?.src ?? afterShots[0]?.src;
+  const pairs = beforeShots.slice(0, 4).map((b, i) => ({ before: b, after: afterShots[i] ?? afterShots[0]! }));
+  const allShots = [...beforeShots.map((s) => ({ ...s, tag: "BEFORE" })), ...afterShots.map((s) => ({ ...s, tag: "AFTER" }))];
+  const preload = useMemo(() => [heroBg, afterShots[0]?.src, afterShots[2]?.src].filter(Boolean) as string[], [heroBg, afterShots]);
+  const finishLoading = useCallback(() => setLoading(false), []);
+
+  useCinema([site, loading]);
 
   useEffect(() => {
-    const io = new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting && e.target.classList.add("in")), { threshold: 0.15 });
-    const variants = ["rv-up", "rv-left", "rv-right", "rv-zoom", "rv-flip", "rv-blur"];
-    document.querySelectorAll(".reveal").forEach((el, i) => {
-      if (![...el.classList].some((c) => c.startsWith("rv-"))) el.classList.add(variants[i % variants.length] ?? "rv-up");
-      if (!el.classList.contains("in")) io.observe(el);
-    });
     const spy = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) setActiveId(e.target.id); }), { rootMargin: "-45% 0px -50% 0px" });
     document.querySelectorAll("section[id]").forEach((el) => spy.observe(el));
     const bar = document.querySelector<HTMLElement>(".scroll-bar");
     const onScroll = () => {
       const max = document.documentElement.scrollHeight - window.innerHeight;
       if (bar) bar.style.transform = `scaleX(${max > 0 ? window.scrollY / max : 0})`;
-      document.documentElement.style.setProperty("--scroll", `${window.scrollY}`);
     };
     window.addEventListener("scroll", onScroll, { passive: true });
-
-    const tilts = [...document.querySelectorAll<HTMLElement>(".mouse-tilt")];
-    const cleanups = tilts.map((element) => {
-      const move = (event: PointerEvent) => {
-        const rect = element.getBoundingClientRect();
-        element.style.setProperty("--tilt-x", `${((event.clientX - rect.left) / rect.width - 0.5) * 7}deg`);
-        element.style.setProperty("--tilt-y", `${((event.clientY - rect.top) / rect.height - 0.5) * -7}deg`);
-      };
-      const reset = () => {
-        element.style.setProperty("--tilt-x", "0deg");
-        element.style.setProperty("--tilt-y", "0deg");
-      };
-      element.addEventListener("pointermove", move);
-      element.addEventListener("pointerleave", reset);
-      return () => {
-        element.removeEventListener("pointermove", move);
-        element.removeEventListener("pointerleave", reset);
-      };
-    });
-
-    return () => {
-      io.disconnect();
-      spy.disconnect();
-      window.removeEventListener("scroll", onScroll);
-      cleanups.forEach((cleanup) => cleanup());
-    };
+    return () => { spy.disconnect(); window.removeEventListener("scroll", onScroll); };
   }, [site]);
 
-  async function signOut() {
-    await supabase.auth.signOut();
-  }
+  useEffect(() => { document.body.style.overflow = loading ? "hidden" : ""; }, [loading]);
 
-  const navLinks = [["About", "about"], ["Project", "project"], ["Progress", "progress"], ["Work", "work"], ["Builds", "builds"], ["Teaser", "teaser"], ["Team", "team"], ["Support", "support"]];
+  const navLinks = [["Story", "about"], ["Project", "project"], ["Progress", "progress"], ["Work", "work"], ["Builds", "builds"], ["Teaser", "teaser"], ["Crew", "team"], ["Support", "support"]];
 
   return (
-    <div className="site-content page-enter overflow-x-hidden">
+    <div className={`site-content cinema ${loading ? "is-loading" : "is-ready"}`}>
+      {loading && <Loader srcs={preload} onDone={finishLoading} />}
       <JesterCursor />
       <HorrorFX />
       <div className="mouse-spotlight" aria-hidden="true" />
       <div className="scroll-bar" aria-hidden="true" />
-      <div className="bg-particles" aria-hidden="true">
-        {Array.from({ length: 18 }, (_, i) => (
-          <span key={i} style={{ left: `${(i * 37) % 100}%`, animationDelay: `${(i * 1.3) % 12}s`, animationDuration: `${12 + (i % 6) * 3}s`, fontSize: `${12 + (i % 4) * 6}px` }}>
-            {["🃏", "✦", "♦", "★", "♣", "♠"][i % 6]}
-          </span>
-        ))}
-      </div>
       {openShot && <Lightbox shot={openShot} onClose={() => setOpenShot(null)} />}
+
       {/* Nav */}
-      <header className="fixed inset-x-0 top-0 z-50 border-b border-border bg-background/70 backdrop-blur-lg">
-        <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
-          <a href="#" className="font-display text-lg font-extrabold">🃏 Jester<span className="text-neon">.</span></a>
-          <div className="hidden gap-6 text-sm text-muted-foreground lg:flex">
+      <header className="cine-nav">
+        <nav className="mx-auto flex max-w-[1500px] items-center justify-between px-5 py-4 sm:px-8">
+          <a href="#" className="cine-logo"><span className="cine-logo-mark">🃏</span> JESTER<em>studios</em></a>
+          <div className="nav-pill hidden lg:flex">
             {navLinks.map(([l, id]) => (
-              <a key={id} href={`#${id}`} className={`nav-link transition hover:text-foreground ${activeId === id ? "is-active text-foreground" : ""}`}>{l}</a>
+              <a key={id} href={`#${id}`} className={`nav-pill-link ${activeId === id ? "is-active" : ""}`}>{l}</a>
             ))}
           </div>
           <div className="flex items-center gap-2">
-            {isAdmin && <Link to="/admin" className="hidden rounded-lg border border-amber/60 px-3 py-2 text-sm font-bold text-amber sm:inline-block">Dashboard</Link>}
+            {isAdmin && <Link to="/admin" className="nav-chip hidden sm:inline-flex">Dashboard</Link>}
             {user ? (
-              <button onClick={() => void signOut()} className="hidden rounded-lg border border-border px-3 py-2 text-sm font-bold sm:inline-block">Log out</button>
+              <button onClick={() => void supabase.auth.signOut()} className="nav-chip hidden sm:inline-flex">Log out</button>
             ) : (
-              <Link to="/login" className="hidden rounded-lg border border-border px-3 py-2 text-sm font-bold sm:inline-block">Sign in</Link>
+              <Link to="/login" className="nav-chip hidden sm:inline-flex">Sign in</Link>
             )}
-            <a href={DISCORD} target="_blank" rel="noreferrer" className="rounded-lg bg-primary px-4 py-2 text-sm font-bold text-primary-foreground">Discord</a>
-            <button onClick={() => setMenuOpen((o) => !o)} aria-label="Open menu" aria-expanded={menuOpen} className="rounded-lg border border-border px-3 py-2 text-sm font-bold lg:hidden">{menuOpen ? "✕" : "☰"}</button>
+            <a href={DISCORD} target="_blank" rel="noreferrer" className="nav-chip nav-chip-red">Discord</a>
+            <button onClick={() => setMenuOpen((o) => !o)} aria-label={menuOpen ? "Close menu" : "Open menu"} aria-expanded={menuOpen} className={`burger lg:hidden ${menuOpen ? "open" : ""}`}><span /><span /></button>
           </div>
         </nav>
-        <div className={`mobile-menu lg:hidden ${menuOpen ? "open" : ""}`}>
-          {navLinks.map(([l, id], i) => (
-            <a key={id} href={`#${id}`} onClick={() => setMenuOpen(false)} style={{ transitionDelay: `${i * 40}ms` }} className={activeId === id ? "text-amber" : ""}>{l}</a>
-          ))}
-          {user ? <button onClick={() => void signOut()}>Log out</button> : <Link to="/login">Sign in</Link>}
-          {isAdmin && <Link to="/admin">Dashboard</Link>}
-          <Link to="/admin-login" className="text-amber">Admin Login</Link>
-        </div>
       </header>
+      <div className={`menu-curtain lg:hidden ${menuOpen ? "open" : ""}`}>
+        <div className="menu-curtain-inner">
+          {navLinks.map(([l, id], i) => (
+            <a key={id} href={`#${id}`} onClick={() => setMenuOpen(false)} style={{ transitionDelay: `${menuOpen ? 150 + i * 50 : 0}ms` }}>
+              <span>{String(i + 1).padStart(2, "0")}</span>{l}
+            </a>
+          ))}
+          <div className="menu-curtain-foot" style={{ transitionDelay: menuOpen ? "600ms" : "0ms" }}>
+            {user ? <button onClick={() => void supabase.auth.signOut()}>Log out</button> : <Link to="/login">Sign in</Link>}
+            {isAdmin && <Link to="/admin">Dashboard</Link>}
+            <Link to="/admin-login">Admin Login</Link>
+          </div>
+        </div>
+      </div>
 
       {/* Hero */}
-      <section className="relative flex min-h-screen items-center bg-grid pt-24">
-        <div className="mouse-drift pointer-events-none absolute -left-32 top-20 h-96 w-96 rounded-full bg-primary/30 blur-[120px]" />
-        <div className="mouse-drift-reverse pointer-events-none absolute -right-20 bottom-10 h-80 w-80 rounded-full bg-neon/20 blur-[120px]" />
-        <div className="floaty mouse-drift pointer-events-none absolute right-[10%] top-1/4 hidden text-7xl lg:block">🎲</div>
-        <div className="floaty mouse-drift-reverse pointer-events-none absolute left-[8%] bottom-1/4 hidden text-6xl lg:block" style={{ animationDelay: "2s" }}>🎮</div>
-        <div className="hero-parallax relative mx-auto max-w-5xl px-5 text-center">
-          <WatchingEyes className="mb-8 justify-center" />
-          <Reveal>
-            <span className="glass mouse-tilt inline-block rounded-full px-4 py-1.5 text-sm text-muted-foreground">🃏 Jester Studios • Indie Roblox Development</span>
-          </Reveal>
-          <Reveal delay={100}>
-            <h1 className="mt-8 text-4xl font-extrabold leading-tight sm:text-6xl md:text-7xl">
-              <span className="glitch-title" data-text="Playful Chaos.">Playful Chaos.</span><br /><span className="glitch-title text-gradient" data-text="Serious Passion.">Serious Passion.</span>
-            </h1>
-          </Reveal>
-          <Reveal delay={200}>
-            <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
-              Six independent creators building fresh, memorable Roblox worlds from the ground up. Raw talent, zero corporate backing, and big ambitions.
-            </p>
-          </Reveal>
-          <Reveal delay={300} className="mt-10 flex flex-wrap justify-center gap-4">
-            <Btn href={DISCORD}><MessageCircle size={18} /> Join the Discord</Btn>
-            <Btn href="#support" variant="ghost"><Heart size={18} /> Support & Invest</Btn>
-          </Reveal>
+      <section data-hero className="hero">
+        <div className="hero-bg-wrap">
+          {heroBg && <img data-hero-bg src={heroBg} alt="" className="hero-bg" />}
+          <div className="hero-veil" />
         </div>
+        <div className="hero-grid-floor" aria-hidden="true" />
+        <div data-hero-left className="hero-frame hero-frame-l mouse-drift" aria-hidden="true">
+          {afterShots[0] && <img src={afterShots[0].src} alt="" />}
+          <span>FIG. 01 — WOODLAND</span>
+        </div>
+        <div data-hero-right className="hero-frame hero-frame-r mouse-drift-reverse" aria-hidden="true">
+          {afterShots[2] && <img src={afterShots[2].src} alt="" />}
+          <span>FIG. 02 — PAVILION</span>
+        </div>
+
+        <div className="hero-content">
+          <div className="hero-meta">
+            <span>EST. 2026</span><span>INDIE ROBLOX STUDIO</span><span>DEBUT: KONNECT US</span>
+          </div>
+          <WatchingEyes className="hero-eyes" />
+          <h1 data-hero-title className="hero-title">
+            <span className="hero-line"><Split text="PLAYFUL" delay={0.1} /></span>
+            <span className="hero-line hero-line-serif"><Split text="chaos," delay={0.35} className="font-serif-i" /></span>
+            <span className="hero-line hero-line-out"><Split text="SERIOUS" delay={0.5} /></span>
+            <span className="hero-line"><Split text="PASSION." delay={0.7} className="text-blood" /></span>
+          </h1>
+          <div className="hero-foot" data-rise>
+            <p>Six independent creators building fresh, memorable Roblox worlds from the ground up. Raw talent, zero corporate backing, and big ambitions.</p>
+            <div className="flex flex-wrap gap-3">
+              <Magnetic href={DISCORD}><MessageCircle size={18} /> Join the Discord</Magnetic>
+              <Magnetic href="#support" variant="ghost"><Heart size={18} /> Support & Invest</Magnetic>
+            </div>
+          </div>
+        </div>
+        <a href="#about" className="scroll-cue" aria-label="Scroll down"><span /> SCROLL</a>
       </section>
 
-      <div className="drip-divider relative z-[2]" aria-hidden="true" />
-      {/* About */}
-      <section id="about" className="bg-surface py-28">
-        <div className="mx-auto grid max-w-6xl gap-12 px-5 md:grid-cols-2 md:items-center">
-          <Reveal>
-            <p className="font-bold uppercase tracking-widest text-amber text-sm">Our Story</p>
-            <h2 className="mt-3 text-3xl font-extrabold sm:text-5xl">100% Independent. <span className="text-neon">Community Powered.</span></h2>
-          </Reveal>
-          <Reveal delay={150} className="space-y-5 text-lg text-muted-foreground">
-            <p>Jester Studios is a self-funded team of six friends learning, building, and pushing our limits every single day. We don't have corporate budgets, investors, or years of industry experience yet—we have dedication, imagination, and a drive to craft games players genuinely love.</p>
-            <p>Every model, line of script, and UI element is built through trial, error, and teamwork. This is the very beginning of our journey, and we're building it out in the open with our community.</p>
-          </Reveal>
+      {/* Story */}
+      <section id="about" className="story">
+        <div className="story-ghost" data-marquee="1" aria-hidden="true">INDEPENDENT · INDEPENDENT · INDEPENDENT ·</div>
+        <div className="mx-auto max-w-[1300px] px-5 sm:px-8">
+          <Eyebrow n="01">Our Story</Eyebrow>
+          <h2 className="display-xl mt-6"><Split text="100% INDEPENDENT." /><br /><span className="font-serif-i text-blood"><Split text="community powered." delay={0.2} /></span></h2>
+          <div className="story-cols">
+            <Words className="story-big" text="Jester Studios is a self-funded team of six friends learning, building, and pushing our limits every single day. We don't have corporate budgets, investors, or years of industry experience yet — we have dedication, imagination, and a drive to craft games players genuinely love." />
+            <div className="story-side" data-rise>
+              <div data-stagger className="space-y-6">
+                <p>Every model, line of script, and UI element is built through trial, error, and teamwork. This is the very beginning of our journey, and we're building it out in the open with our community.</p>
+                <div className="stat-row">
+                  <div><b>06</b><span>Creators</span></div>
+                  <div><b>01</b><span>Debut game</span></div>
+                  <div><b>00</b><span>Investors</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* Project */}
-      <section id="project" className="py-28">
-        <div className="mx-auto max-w-4xl px-5">
-          <Reveal className="glow-border isolate">
-            <div className="mouse-tilt rounded-2xl bg-surface p-8 sm:p-12">
-              <span className="inline-flex items-center gap-2 rounded-full bg-primary/15 px-3 py-1 text-sm font-medium text-primary"><Rocket size={16} /> Debut Game • Active Development</span>
-              <h2 className="mt-6 text-3xl font-extrabold sm:text-5xl">[Konnect Us / <span className="text-amber">Classified</span>]</h2>
-              <p className="mt-4 max-w-2xl text-lg text-muted-foreground">Our inaugural Roblox experience is underway. Focused on snappy mechanics, collaborative multiplayer fun, and high replayability.</p>
-              <div className="mt-8">
-                <div className="mb-2 flex justify-between text-sm"><span className="text-muted-foreground">Development progress</span><span className="font-bold text-neon">{pct}%</span></div>
-                <div className="h-3 overflow-hidden rounded-full bg-muted">
-                  <div className="progress-fill h-full rounded-full bg-gradient-to-r from-neon via-primary to-amber" style={{ width: `${pct}%` }} />
+      <section id="project" className="project">
+        <div className="project-bg">{afterShots[4] && <img data-zoom src={afterShots[4].src} alt="" />}</div>
+        <div className="project-veil" />
+        <div className="relative mx-auto max-w-[1300px] px-5 sm:px-8">
+          <Eyebrow n="02">Debut Game · Active Development</Eyebrow>
+          <div className="project-title" data-marquee="-1" aria-hidden="true">KONNECT US KONNECT US KONNECT US</div>
+          <div className="project-panel" data-rise>
+            <div className="classified-stamp">CLASSIFIED</div>
+            <h2 className="display-lg">[Konnect Us / <span className="text-blood">Classified</span>]</h2>
+            <p className="mt-5 max-w-xl text-lg text-muted-foreground">Our inaugural Roblox experience is underway. Focused on snappy mechanics, collaborative multiplayer fun, and high replayability.</p>
+            <div className="project-meter">
+              <div className="project-pct"><span data-count={pct}>{pct}</span><i>%</i></div>
+              <div className="flex-1">
+                <div className="mb-3 flex justify-between text-xs uppercase tracking-[0.3em] text-muted-foreground"><span>Development progress</span><span>{text("project_status", "COMING SOON")}</span></div>
+                <div className="meter-track"><div className="meter-fill progress-fill" style={{ width: `${pct}%` }} /></div>
+                <div className="meter-ticks">{Array.from({ length: 21 }, (_, i) => <span key={i} />)}</div>
+              </div>
+            </div>
+            <div className="mt-8"><Magnetic href="#progress" variant="ghost"><ZoomIn size={18} /> Check Progress</Magnetic></div>
+          </div>
+        </div>
+      </section>
+
+      {/* Progress compare */}
+      <section id="progress" className="progress-sec">
+        <div className="mx-auto max-w-[1300px] px-5 sm:px-8">
+          <Eyebrow n="03">Konnect Us · Classified</Eyebrow>
+          <h2 className="display-xl mt-6"><Split text="THEN" /> <span className="font-serif-i text-muted-foreground"><Split text="&" delay={0.15} /></span> <span className="text-blood"><Split text="NOW" delay={0.25} /></span></h2>
+          <p className="mt-6 max-w-2xl text-lg text-muted-foreground" data-rise>See how our first indie game has changed. Drag across each picture: the left side was taken before our latest updates, the right side shows the richer lighting, expanded scenery and added details now in the game.</p>
+          <div className="compare-list">
+            {pairs.map((p, i) => (
+              <div key={p.before.src} className={`compare-item ${i % 2 ? "is-flip" : ""}`}>
+                <div data-mask={i % 2 ? "right" : "left"} className="compare-frame"><Compare before={p.before.src} after={p.after.src} label={p.after.caption} /></div>
+                <div className="compare-copy" data-rise>
+                  <div data-stagger>
+                    <span className="compare-n">{String(i + 1).padStart(2, "0")}</span>
+                    <h3 className="text-2xl font-bold sm:text-3xl">{p.after.caption}</h3>
+                    <p className="mt-4 text-muted-foreground">{p.after.description}</p>
+                    <button onClick={() => setOpenShot(p.after)} className="link-arrow mt-6">View full picture <span>→</span></button>
+                  </div>
                 </div>
               </div>
-              <div className="mt-8 flex flex-wrap items-center gap-4">
-                <span className="rounded-lg border border-amber/50 px-3 py-1.5 text-sm font-bold text-amber">{text("project_status", "COMING SOON")}</span>
-                <Btn href="#progress" variant="ghost"><ZoomIn size={18} /> Check Progress</Btn>
+            ))}
+          </div>
+          {afterShots.length > 4 && (
+            <div className="extra-after" data-rise><div data-stagger className="grid gap-5 sm:grid-cols-2">
+              {afterShots.slice(4).map((s) => (
+                <button key={s.src} onClick={() => setOpenShot(s)} className="shot-tile" aria-label={`Open updated view: ${s.caption}`}>
+                  <img src={s.src} alt={`Updated Konnect Us build — ${s.caption}`} loading="lazy" />
+                  <span className="shot-tile-cap"><b>NEW</b> {s.caption}</span>
+                </button>
+              ))}
+            </div></div>
+          )}
+        </div>
+      </section>
+
+      {/* Work — asymmetric collage */}
+      <section id="work" className="work-sec">
+        <div className="mx-auto max-w-[1400px] px-5 sm:px-8">
+          <div className="work-head">
+            <div>
+              <Eyebrow n="04">Our Work</Eyebrow>
+              <h2 className="display-lg mt-6"><Split text="A SMALL GLIMPSE" /><br /><span className="font-serif-i text-blood"><Split text="of how we work" delay={0.2} /></span></h2>
+            </div>
+            <p className="max-w-md text-muted-foreground" data-rise>{text("work_intro", "These earlier shots come straight from our current project, before our latest updates — a small example of how we started and how we work. Keep in mind: we're fully indie, and this is our very first game.")}</p>
+          </div>
+          <div className="collage">
+            {beforeShots.slice(0, 4).map((shot, i) => (
+              <button key={shot.src} onClick={() => setOpenShot(shot)} className={`collage-item collage-${i}`} aria-label={`Open ${shot.caption}`}>
+                <div data-mask={i % 2 ? "right" : "up"} className="collage-mask">
+                  <img data-zoom src={shot.src} alt={`Work in progress by Jester Studios — ${shot.caption}`} loading="lazy" />
+                </div>
+                <span className="collage-cap"><i>{String(i + 1).padStart(2, "0")}</i>{shot.caption}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Builds — pinned horizontal reel */}
+      <section id="builds" data-hscroll className="reel">
+        <div className="reel-head">
+          <Eyebrow n="05">Build Timeline</Eyebrow>
+          <h2 className="display-lg mt-4">EARLIER BUILDS <span className="font-serif-i text-blood">to</span> LATEST</h2>
+          <p className="reel-hint">Keep scrolling — the reel slides sideways. Tap any frame to open it.</p>
+        </div>
+        <div data-track className="reel-track">
+          {allShots.map((s, i) => (
+            <button key={`${s.tag}-${s.src}`} data-hcard onClick={() => setOpenShot(s)} className="reel-card" aria-label={`Open ${s.caption}`}>
+              <div className="reel-img"><img src={s.src} alt={s.caption} loading="lazy" /></div>
+              <div className="reel-meta">
+                <span className={s.tag === "BEFORE" ? "tag-before" : "tag-after"}>{s.tag}</span>
+                <span className="reel-idx">{String(i + 1).padStart(2, "0")} / {String(allShots.length).padStart(2, "0")}</span>
               </div>
-            </div>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* Development Progress */}
-      <section id="progress" className="bg-surface py-28 scroll-mt-20">
-        <div className="mx-auto max-w-6xl px-5">
-          <Reveal className="text-center">
-            <p className="font-bold uppercase tracking-widest text-amber text-sm">Konnect Us • Classified</p>
-            <h2 className="mt-3 text-3xl font-extrabold sm:text-5xl">View <span className="text-gradient">Development Progress</span></h2>
-            <p className="mx-auto mt-5 max-w-3xl text-lg text-muted-foreground">See how our first indie game has changed. The first images were taken before our latest updates; the new images show the richer lighting, expanded scenery and added details now in the game.</p>
-          </Reveal>
-
-          <Reveal className="mt-16">
-            <div className="flex flex-wrap items-end justify-between gap-3 border-b border-border pb-5">
-              <div><span className="text-sm font-bold uppercase tracking-widest text-muted-foreground">Earlier build</span><h3 className="mt-2 text-2xl font-extrabold">Before the updates</h3></div>
-              <span className="rounded-full bg-muted px-3 py-1 text-xs font-bold text-muted-foreground">BEFORE</span>
-            </div>
-          </Reveal>
-          <div className="mt-8 grid gap-6 sm:grid-cols-2">
-            {beforeShots.map((shot, i) => (
-              <Reveal key={`before-${shot.src}`} delay={(i % 2) * 120} className="glass glow-hover mouse-tilt group rounded-2xl p-2">
-                <button onClick={() => setOpenShot(shot)} className="relative block w-full cursor-pointer overflow-hidden rounded-xl" aria-label={`Open earlier view: ${shot.caption}`}>
-                  <img src={shot.src} alt={`Earlier Konnect Us build — ${shot.caption}`} loading="lazy" className="aspect-video w-full object-cover transition duration-500 group-hover:scale-[1.04]" />
-                  <span className="absolute inset-0 flex items-center justify-center bg-background/0 text-transparent transition duration-300 group-hover:bg-background/40 group-hover:text-neon"><ZoomIn size={36} /></span>
-                </button>
-                <p className="flex items-center gap-2 px-3 py-3 text-sm text-muted-foreground"><Hammer size={14} className="shrink-0 text-amber" /> {shot.caption}</p>
-              </Reveal>
-            ))}
-          </div>
-
-          <Reveal className="mt-20">
-            <div className="flex flex-wrap items-end justify-between gap-3 border-b border-neon/30 pb-5">
-              <div><span className="text-sm font-bold uppercase tracking-widest text-neon">Latest build</span><h3 className="mt-2 text-2xl font-extrabold">After the updates</h3></div>
-              <span className="rounded-full bg-neon/15 px-3 py-1 text-xs font-bold text-neon">{pct}% COMPLETE</span>
-            </div>
-          </Reveal>
-          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {afterShots.map((shot, i) => (
-              <Reveal key={shot.src} delay={(i % 3) * 100} className="glass glow-hover mouse-tilt group rounded-2xl p-2">
-                <button onClick={() => setOpenShot(shot)} className="relative block w-full cursor-pointer overflow-hidden rounded-xl" aria-label={`Open updated view: ${shot.caption}`}>
-                  <img src={shot.src} alt={`Updated Konnect Us build — ${shot.caption}`} loading="lazy" className="aspect-video w-full object-contain transition duration-500 group-hover:scale-[1.04]" />
-                  <span className="absolute inset-0 flex items-center justify-center bg-background/0 text-transparent transition duration-300 group-hover:bg-background/40 group-hover:text-neon"><ZoomIn size={34} /></span>
-                </button>
-                <p className="flex items-center gap-2 px-3 py-3 text-sm text-muted-foreground"><Rocket size={14} className="shrink-0 text-neon" /> {shot.caption}</p>
-              </Reveal>
-            ))}
-          </div>
-          <p className="mt-8 text-center text-sm text-muted-foreground">Click any picture to view the environment up close and read what changed.</p>
-        </div>
-      </section>
-
-      {/* Work */}
-      <section id="work" className="py-28">
-        <div className="mx-auto max-w-6xl px-5">
-          <Reveal className="text-center">
-            <p className="font-bold uppercase tracking-widest text-amber text-sm">Our Work</p>
-            <h2 className="mt-3 text-3xl font-extrabold sm:text-5xl">A Small Glimpse of <span className="text-gradient">How We Work</span></h2>
-            <p className="mx-auto mt-5 max-w-2xl text-lg text-muted-foreground">
-              {text("work_intro", "These earlier shots come straight from our current project, before our latest updates — a small example of how we started and how we work. Keep in mind: we're fully indie, and this is our very first game.")}
-            </p>
-          </Reveal>
-          <div className="mt-14 grid gap-6 sm:grid-cols-2">
-            {beforeShots.map((shot, i) => (
-              <Reveal key={shot.src} delay={(i % 2) * 120} className="glass glow-hover mouse-tilt group rounded-2xl p-2">
-                <button onClick={() => setOpenShot(shot)} className="relative block w-full cursor-pointer overflow-hidden rounded-xl" aria-label={`Open ${shot.caption}`}>
-                  <img src={shot.src} alt={`Work in progress by Jester Studios — ${shot.caption}`} loading="lazy"
-                    className="aspect-video w-full object-cover transition duration-500 group-hover:scale-[1.04]" />
-                  <span className="absolute inset-0 flex items-center justify-center bg-background/0 text-transparent transition duration-300 group-hover:bg-background/40 group-hover:text-neon">
-                    <ZoomIn size={36} />
-                  </span>
-                </button>
-                <p className="flex items-center gap-2 px-3 py-3 text-sm text-muted-foreground">
-                  <Hammer size={14} className="shrink-0 text-neon" /> {shot.caption}
-                </p>
-              </Reveal>
-            ))}
-          </div>
-          <p className="mt-8 text-center text-sm text-muted-foreground">Click any picture to open it up close, with a note about the environment you're looking at.</p>
-        </div>
-      </section>
-
-      {/* Builds slider */}
-      <section id="builds" className="py-28 scroll-mt-20">
-        <div className="mx-auto max-w-5xl px-5">
-          <Reveal className="text-center">
-            <p className="font-bold uppercase tracking-widest text-neon text-sm">Build Timeline</p>
-            <h2 className="mt-3 text-3xl font-extrabold sm:text-5xl">Earlier Builds to <span className="text-gradient">Latest Updates</span></h2>
-            <p className="mx-auto mt-5 max-w-2xl text-lg text-muted-foreground">Slide through every screenshot we've shared — from our first builds to the newest updates. Drag, swipe, use the arrows, or tap a picture to open it.</p>
-          </Reveal>
-          <Reveal className="mt-12" delay={120}>
-            <BuildSlider
-              slides={[...beforeShots.map((s) => ({ ...s, tag: "BEFORE" })), ...afterShots.map((s) => ({ ...s, tag: "AFTER" }))]}
-              onOpen={(s) => setOpenShot(s)}
-            />
-          </Reveal>
+              <p className="reel-cap">{s.caption}</p>
+            </button>
+          ))}
+          <div className="reel-end"><span className="font-serif-i">to be continued…</span></div>
         </div>
       </section>
 
       {/* Teasers */}
-      <section id="teaser" className="bg-surface py-28 scroll-mt-20">
-        <div className="mx-auto max-w-5xl px-5">
-          <Reveal className="text-center">
-            <p className="font-bold uppercase tracking-widest text-neon text-sm">Official Teasers • Konnect Us</p>
-            <h2 className="mt-3 text-3xl font-extrabold sm:text-5xl">Teasers & <span className="text-gradient">Trailer</span></h2>
-            <p className="mx-auto mt-5 max-w-2xl text-lg text-muted-foreground">{text("teaser_intro", "Something is brewing in the park. Stay tuned — our teasers and the final trailer are on the way.")}</p>
-          </Reveal>
-          <div className="mt-12 grid gap-6 sm:grid-cols-3">
+      <section id="teaser" className="teaser-sec">
+        <div className="mx-auto max-w-[1300px] px-5 sm:px-8">
+          <Eyebrow n="06">Official Teasers · Konnect Us</Eyebrow>
+          <h2 className="display-xl mt-6"><Split text="SIGNAL" /> <span className="text-blood font-serif-i"><Split text="incoming" delay={0.2} /></span></h2>
+          <p className="mt-6 max-w-2xl text-lg text-muted-foreground" data-rise>{text("teaser_intro", "Something is brewing in the park. Stay tuned — our teasers and the final trailer are on the way.")}</p>
+          <div className="teaser-grid" data-rise><div data-stagger className="contents">
             {videoSlots.map((v, i) => (
-              <Reveal key={v.slot} delay={i * 120} className={`glass glow-hover mouse-tilt rounded-2xl text-center ${v.videoUrl ? "p-2 sm:col-span-3" : "p-8"}`}>
+              <div key={v.slot} className={`film ${v.videoUrl ? "film-live" : ""} ${i === 2 ? "film-wide" : ""}`}>
                 {v.videoUrl ? (
-                  <>
-                    <video src={v.videoUrl} poster={v.thumbUrl ?? undefined} controls playsInline preload="none" className="aspect-video w-full rounded-xl bg-background" aria-label={v.title} />
-                    <div className="p-4"><h3 className="text-xl font-bold">{v.title}</h3>{v.description && <p className="mx-auto mt-2 max-w-2xl text-muted-foreground">{v.description}</p>}<span className="mt-3 inline-block rounded-full bg-foreground/15 px-3 py-1 text-xs font-bold">OUT NOW</span></div>
-                  </>
+                  <video src={v.videoUrl} poster={v.thumbUrl ?? undefined} controls playsInline preload="none" className="film-video" aria-label={v.title} />
                 ) : (
                   <>
-                    <div className="floaty mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary/20 text-2xl">🎬</div>
-                    <h3 className="mt-5 text-xl font-bold">{v.title}</h3>
-                    <span className="mt-4 inline-block rounded-full bg-amber/15 px-3 py-1 text-xs font-bold text-amber">COMING SOON</span>
+                    {afterShots[(i * 2 + 1) % afterShots.length] && <img src={afterShots[(i * 2 + 1) % afterShots.length]!.src} alt="" className="film-poster" />}
+                    <div className="film-static" />
+                    <div className="film-rec"><i /> NO SIGNAL</div>
                   </>
                 )}
-              </Reveal>
+                <div className="film-info">
+                  <span className="film-n">REEL {String(i + 1).padStart(2, "0")}</span>
+                  <h3 className="film-title">{v.title}</h3>
+                  <span className={v.videoUrl ? "tag-after" : "tag-before"}>{v.videoUrl ? "OUT NOW" : "COMING SOON"}</span>
+                </div>
+              </div>
             ))}
-          </div>
+          </div></div>
         </div>
       </section>
 
@@ -590,118 +567,97 @@ function Index() {
         </div>
       </div>
 
-      {/* Support */}
-      <section id="support" className="bg-surface py-28">
-        <div className="mx-auto max-w-6xl px-5">
-          <Reveal className="text-center">
-            <h2 className="text-3xl font-extrabold sm:text-5xl">Back the Vision: <span className="text-gradient">Invest in Jester Studios</span></h2>
-            <p className="mx-auto mt-5 max-w-2xl text-lg text-muted-foreground">{text("support_intro", "Help us bridge the gap. Your support directly funds server costs, custom assets, 3D models, and the development of our upcoming games.")}</p>
-          </Reveal>
-          <div className="mt-14 grid gap-6 md:grid-cols-2">
-            <Reveal className="glass glow-hover mouse-tilt rounded-2xl p-8">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber/15 text-amber"><Coffee /></div>
-              <h3 className="mt-5 text-xl font-bold">Community Support & Donations</h3>
-              <p className="mt-3 text-muted-foreground">All support goes straight into development — servers, assets, and tools. Pick any channel below.</p>
-              <div className="mt-6 space-y-5">
-                {[
-                  {
-                    flag: "🇵🇰",
-                    label: "Pakistan",
-                    items: [
-                      { name: "EasyPaisa", value: "", note: "Currently unavailable" },
-                      { name: "JazzCash", value: "", note: "Currently unavailable" },
-                    ],
-                  },
-                  {
-                    flag: "🇮🇳",
-                    label: "India",
-                    items: [
-                      { name: "UPI", value: "", note: "Currently unavailable" },
-                    ],
-                  },
-                  {
-                    flag: "🌍",
-                    label: "International",
-                    items: [
-                      { name: "Tether USDT — BNB Smart Chain (BEP20)", value: "0x66c8F05B7E7D80baDb7b55609424deE89fc848D3", note: "" },
-                    ],
-                  },
-                ].map((group) => (
-                  <div key={group.label}>
-                    <p className="mb-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">{group.flag} {group.label}</p>
-                    <div className="space-y-3">
-                      {group.items.map((item) => (
-                        <div key={item.name} className="mouse-tilt flex items-center justify-between gap-3 rounded-xl border border-border bg-background/60 px-4 py-3">
-                          <div className="min-w-0">
-                            <p className="text-sm font-bold">{item.name}</p>
-                            <p className="break-all text-sm text-muted-foreground">{item.value || item.note}</p>
-                          </div>
-                          {item.value && <CopyButton value={item.value} />}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </Reveal>
-            <Reveal delay={150} className="glass glow-hover mouse-tilt rounded-2xl p-8">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/15 text-primary"><Handshake /></div>
-              <h3 className="mt-5 text-xl font-bold">Future Project Investment & Partnerships</h3>
-              <p className="mt-3 text-muted-foreground">Interested in sponsoring or investing in our debut game or future roadmap? We're open to strategic partners who believe in indie talent.</p>
-              <div className="mt-6"><Btn href={INSTAGRAM}><Camera size={18} /> Contact for Investment</Btn></div>
-            </Reveal>
-          </div>
-        </div>
-      </section>
-
       {/* Team */}
-      <section id="team" className="py-28">
-        <div className="mx-auto max-w-6xl px-5">
-          <Reveal className="text-center">
-            <h2 className="text-3xl font-extrabold sm:text-5xl">Meet the <span className="text-neon">Jester Crew</span></h2>
-          </Reveal>
-          <TeamGroup title="Founders" members={team.founders} perRow={5} maxW="max-w-7xl" />
-          <TeamGroup title="Developers" members={team.developers} perRow={3} />
-          <TeamGroup title="Social Media" members={team.social} perRow={2} maxW="max-w-4xl" />
+      <section id="team" className="crew">
+        <div className="mx-auto max-w-[1400px] px-5 sm:px-8">
+          <Eyebrow n="07">The Crew</Eyebrow>
+          <h2 className="display-xl mt-6"><Split text="MEET THE" /> <span className="text-blood font-serif-i"><Split text="jesters" delay={0.2} /></span></h2>
+          <p className="mt-6 max-w-xl text-muted-foreground" data-rise>Every card is a real person. Hover or tap one to look closer.</p>
+          <Deck title="Founders" n="I" members={team.founders} />
+          <Deck title="Developers" n="II" members={team.developers} />
+          <Deck title="Social Media" n="III" members={team.social} />
         </div>
       </section>
 
-      {/* Ongoing Collaboration */}
-      <section id="collab" className="bg-surface py-28">
-        <div className="mx-auto max-w-6xl px-5">
-          <Reveal className="text-center">
-            <p className="font-bold uppercase tracking-widest text-amber text-sm">Ongoing Collaboration</p>
-            <h2 className="mt-3 text-3xl font-extrabold sm:text-5xl">In Partnership with <span className="text-gradient">Angoor Studios</span></h2>
-            <p className="mx-auto mt-5 max-w-2xl text-lg text-muted-foreground">
-              Talented creators we're teaming up with on current and future projects.
-            </p>
-          </Reveal>
-          <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {team.collaborators.map((m, i) => <TeamCard key={m.name} m={m} i={i} perRow={3} />)}
+      {/* Collaboration */}
+      <section id="collab" className="crew crew-collab">
+        <div className="mx-auto max-w-[1400px] px-5 sm:px-8">
+          <Eyebrow n="08">Ongoing Collaboration</Eyebrow>
+          <h2 className="display-lg mt-6">IN PARTNERSHIP WITH <span className="text-blood font-serif-i">Angoor Studios</span></h2>
+          <p className="mt-6 max-w-xl text-muted-foreground" data-rise>Talented creators we're teaming up with on current and future projects.</p>
+          <Deck title="Angoor Studios" n="IV" members={team.collaborators} />
+        </div>
+      </section>
+
+      {/* Support */}
+      <section id="support" className="support-sec">
+        <div className="mx-auto max-w-[1300px] px-5 sm:px-8">
+          <Eyebrow n="09">Back the Vision</Eyebrow>
+          <h2 className="display-xl mt-6"><Split text="FEED THE" /> <span className="text-blood font-serif-i"><Split text="jester" delay={0.2} /></span></h2>
+          <p className="mt-6 max-w-2xl text-lg text-muted-foreground" data-rise>{text("support_intro", "Help us bridge the gap. Your support directly funds server costs, custom assets, 3D models, and the development of our upcoming games.")}</p>
+          <div className="support-grid">
+            <div className="ledger" data-rise>
+              <div className="ledger-head"><Coffee size={18} /> Community Support & Donations</div>
+              <p className="px-6 pt-4 text-sm text-muted-foreground">All support goes straight into development — servers, assets, and tools. Pick any channel below.</p>
+              {[
+                { flag: "🇵🇰", label: "Pakistan", items: [{ name: "EasyPaisa", value: "", note: "Currently unavailable" }, { name: "JazzCash", value: "", note: "Currently unavailable" }] },
+                { flag: "🇮🇳", label: "India", items: [{ name: "UPI", value: "", note: "Currently unavailable" }] },
+                { flag: "🌍", label: "International", items: [{ name: "Tether USDT — BNB Smart Chain (BEP20)", value: "0x66c8F05B7E7D80baDb7b55609424deE89fc848D3", note: "" }] },
+              ].map((group) => (
+                <div key={group.label} className="ledger-group">
+                  <p className="ledger-label">{group.flag} {group.label}</p>
+                  {group.items.map((item) => (
+                    <div key={item.name} className={`ledger-row ${item.value ? "is-live" : ""}`}>
+                      <div className="min-w-0">
+                        <p className="text-sm font-bold">{item.name}</p>
+                        <p className="break-all font-mono text-xs text-muted-foreground">{item.value || item.note}</p>
+                      </div>
+                      {item.value ? <CopyButton value={item.value} /> : <span className="ledger-off">OFFLINE</span>}
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+            <div className="invest" data-rise>
+              {afterShots[3] && <img data-zoom src={afterShots[3].src} alt="" className="invest-bg" />}
+              <div className="invest-veil" />
+              <div className="relative">
+                <Handshake size={28} className="text-blood" />
+                <h3 className="mt-5 text-3xl font-bold sm:text-4xl">Future Project Investment & Partnerships</h3>
+                <p className="mt-4 text-muted-foreground">Interested in sponsoring or investing in our debut game or future roadmap? We're open to strategic partners who believe in indie talent.</p>
+                <div className="mt-8"><Magnetic href={INSTAGRAM}><Camera size={18} /> Contact for Investment</Magnetic></div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Community */}
-      <section className="px-5 pb-28">
-        <Reveal className="mouse-tilt relative mx-auto max-w-5xl overflow-hidden rounded-3xl bg-gradient-to-br from-primary/40 via-surface to-neon/20 p-10 text-center sm:p-16 border border-border">
-          <h2 className="text-3xl font-extrabold sm:text-4xl">Playtests. Devlogs. Feedback.</h2>
-          <p className="mx-auto mt-4 max-w-xl text-lg text-muted-foreground">Join our Discord to get early playtest access, read developer logs, and help shape our games in live feedback sessions.</p>
-          <div className="mt-8"><Btn href={DISCORD}><MessageCircle size={18} /> Join the Discord</Btn></div>
-        </Reveal>
+      <section className="finale">
+        <div className="finale-bg">{afterShots[5] && <img data-zoom src={afterShots[5].src} alt="" />}</div>
+        <div className="finale-veil" />
+        <div className="relative mx-auto max-w-5xl px-5 text-center">
+          <Eyebrow>The door is open</Eyebrow>
+          <h2 className="display-xl mt-6"><Split text="PLAYTESTS." /><br /><Split text="DEVLOGS." delay={0.15} /><br /><span className="text-blood font-serif-i"><Split text="feedback." delay={0.3} /></span></h2>
+          <p className="mx-auto mt-6 max-w-xl text-lg text-muted-foreground" data-rise>Join our Discord to get early playtest access, read developer logs, and help shape our games in live feedback sessions.</p>
+          <div className="mt-10 flex justify-center"><Magnetic href={DISCORD}><MessageCircle size={18} /> Join the Discord</Magnetic></div>
+        </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border bg-surface py-10">
-        <div className="mx-auto flex max-w-6xl flex-col items-center gap-5 px-5 text-center text-sm text-muted-foreground">
-          <div className="flex flex-wrap justify-center gap-6">
-            <a href={DISCORD} target="_blank" rel="noreferrer" className="hover:text-neon">Discord</a>
-            <a href={INSTAGRAM} target="_blank" rel="noreferrer" className="hover:text-neon">Instagram</a>
-            <a href="#support" className="hover:text-neon">Support/Invest</a>
-            <Link to="/admin-login" className="hover:text-neon">Admin Login</Link>
+      <footer className="cine-footer">
+        <div className="mx-auto max-w-[1400px] px-5 sm:px-8">
+          <div className="footer-links">
+            <a href={DISCORD} target="_blank" rel="noreferrer">Discord ↗</a>
+            <a href={INSTAGRAM} target="_blank" rel="noreferrer">Instagram ↗</a>
+            <a href="#support">Support/Invest</a>
+            <Link to="/admin-login">Admin Login</Link>
           </div>
-          <p>© {new Date().getFullYear()} Jester Studios • jestercommunity.co</p>
-          <p className="text-xs opacity-70">Jester Studios is an independent game development group not affiliated with Roblox Corporation.</p>
+          <div className="footer-word" aria-hidden="true">JESTER</div>
+          <div className="footer-base">
+            <p>© {new Date().getFullYear()} Jester Studios • jestercommunity.co</p>
+            <p>Jester Studios is an independent game development group not affiliated with Roblox Corporation.</p>
+          </div>
         </div>
       </footer>
     </div>

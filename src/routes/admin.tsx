@@ -53,14 +53,14 @@ function AdminLayout() {
     <div className="admin-shell min-h-screen bg-background md:flex">
       <aside className="border-b border-border bg-surface md:sticky md:top-0 md:h-screen md:w-60 md:border-b-0 md:border-r">
         <div className="flex items-center justify-between p-5">
-          <Link to="/" className="font-display font-extrabold">🃏 Jester<span className="text-amber">.</span></Link>
+          <Link to="/" className="cine-logo"><span className="cine-logo-mark">🃏</span> JESTER<em>studios</em></Link>
           <span className="rounded bg-primary/30 px-2 py-0.5 text-[10px] font-bold text-amber">ADMIN</span>
         </div>
         <nav className="flex gap-1 overflow-x-auto px-3 pb-3 md:flex-col md:overflow-visible">
           {NAV.map(({ to, label, icon: Icon }) => {
             const active = to === "/admin" ? path === "/admin" || path === "/admin/" : path.startsWith(to);
             return (
-              <Link key={to} to={to} className={`flex shrink-0 items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-bold transition ${active ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted hover:text-foreground"}`}>
+              <Link key={to} to={to} className={`admin-nav-link ${active ? "is-active" : ""} flex shrink-0 items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-bold transition ${active ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted hover:text-foreground"}`}>
                 <Icon size={16} /> {label}
               </Link>
             );
@@ -76,7 +76,7 @@ function AdminLayout() {
         <div className="mb-6 flex justify-end md:hidden">
           <button onClick={signOut} className="flex items-center gap-1.5 text-sm text-muted-foreground"><LogOut size={14} /> Log out</button>
         </div>
-        <Outlet />
+        <div key={path} className="admin-route"><Outlet /></div>
       </main>
     </div>
   );

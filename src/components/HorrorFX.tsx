@@ -2,16 +2,10 @@ import { useEffect, useState } from "react";
 
 /** Full-horror ambience: boot intro, film grain, random screen tears, cursor trail, watching eyes. */
 export function HorrorFX() {
-  const [intro, setIntro] = useState(false);
   const [tear, setTear] = useState(false);
 
   useEffect(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (!sessionStorage.getItem("jester-intro") && !reduce) {
-      setIntro(true);
-      sessionStorage.setItem("jester-intro", "1");
-      setTimeout(() => setIntro(false), 2600);
-    }
     if (reduce) return;
 
     let t: ReturnType<typeof setTimeout>;
@@ -45,16 +39,6 @@ export function HorrorFX() {
     <>
       <div className="film-grain" aria-hidden="true" />
       {tear && <div className="screen-tear" aria-hidden="true" />}
-      {intro && (
-        <div className="boot-intro" aria-hidden="true">
-          <div className="boot-inner">
-            <p className="boot-line">&gt; SIGNAL FOUND</p>
-            <p className="boot-line" style={{ animationDelay: ".4s" }}>&gt; WAKING THE JESTER...</p>
-            <h2 className="glitch-title boot-logo" data-text="JESTER STUDIOS">JESTER STUDIOS</h2>
-            <p className="boot-line" style={{ animationDelay: "1.1s" }}>&gt; DON'T LOOK AWAY</p>
-          </div>
-        </div>
-      )}
     </>
   );
 }
