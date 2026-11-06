@@ -717,10 +717,6 @@ html.lenis, html.lenis body { height: auto; }
   49% { text-shadow: -9px 2px var(--blood), 8px -2px oklch(0.8 0.1 200 / 50%); translate: 5px 0; }
   51% { text-shadow: 2px 0 var(--blood), -2px 0 oklch(0.8 0.1 200 / 35%); translate: 0 0; }
 }
-/* Scroll-speed distortion */
-.site-content section img, .tarot, .eyebrow { transform: skewY(calc(var(--vel, 0) * 4deg)); transition: transform .25s ease-out; }
-.site-content section h2 { filter: blur(calc(var(--vel-abs, 0) * 3px)); letter-spacing: calc(var(--vel-abs, 0) * .08em); transition: filter .2s, letter-spacing .2s; }
-body::after { content: ""; position: fixed; inset: 0; z-index: 60; pointer-events: none; background: repeating-linear-gradient(0deg, transparent 0 3px, color-mix(in oklch, var(--blood) 25%, transparent) 3px 4px); opacity: calc(var(--vel-abs, 0) * .8); }
 /* Team cards: possessed */
 .tarot-inner { animation: card-flicker 7s infinite; }
 .tarot:nth-child(2n) .tarot-inner { animation-delay: -2.3s; }
@@ -733,5 +729,4 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 60; pointer-event
 .tarot:hover .tarot-name { color: var(--blood); text-shadow: 0 0 24px var(--blood); }
 @media (prefers-reduced-motion: reduce) {
   .hero-lightning, .hero-heartbeat, .hero-ash, .hero-title, .tarot-inner, .tarot:hover .tarot-inner { animation: none !important; }
-  body::after { display: none; }
 }

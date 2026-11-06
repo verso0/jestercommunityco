@@ -29,12 +29,6 @@ export function useCinema(deps: unknown[] = []) {
       if (!reduce) {
         lenis = new Lenis({ lerp: 0.09, smoothWheel: true });
         lenis.on("scroll", ScrollTrigger.update);
-        const root = document.documentElement;
-        lenis.on("scroll", (l: { velocity: number }) => {
-          const v = Math.max(-1, Math.min(1, l.velocity / 40));
-          root.style.setProperty("--vel", v.toFixed(3));
-          root.style.setProperty("--vel-abs", Math.abs(v).toFixed(3));
-        });
         gsap.ticker.add(tick);
         gsap.ticker.lagSmoothing(0);
         document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((a) => {
