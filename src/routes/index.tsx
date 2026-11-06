@@ -21,8 +21,7 @@ import progressAfter3 from "@/assets/progress-after-full-3.jpg.asset.json";
 import progressAfter4 from "@/assets/progress-after-full-4.jpg.asset.json";
 import progressAfter5 from "@/assets/progress-after-full-5.jpg.asset.json";
 import progressAfter6 from "@/assets/progress-after-full-6.jpg.asset.json";
-import teaserVideo from "@/assets/teaser-1.mp4.asset.json";
-import teaserPoster from "@/assets/teaser-1-poster.jpg.asset.json";
+import { BuildSlider } from "@/components/BuildSlider";
 
 const AVATARS: Record<string, string> = {
   GROZA: avGroza.url, BUDDI: avBuddi.url, BLADE: avBlade.url, BACAN: avBacan.url, VEE: avVee.url,
@@ -31,7 +30,6 @@ const AVATARS: Record<string, string> = {
 
 const DISCORD = "https://discord.gg/wXTNsqUJm";
 const INSTAGRAM = "https://www.instagram.com/jestercommunity.co/";
-const ROBLOX = "https://www.roblox.com/groups";
 
 const workShots = [
   {
@@ -90,11 +88,11 @@ const founders: TeamMember[] = [
   { name: "NYXEN", role: "FOUNDER", bio: "Keeps everyone organized and on schedule, then jumps straight into modeling. The planner with an artist's eye for worlds that beg to be explored." },
   { name: "BUDDI", role: "FOUNDER", bio: "Defines the look of everything — shapes, colors, style. A perfectionist who won't ship a model until it feels exactly right." },
   { name: "GROZA", role: "FOUNDER", bio: "Keeps the community safe, fair, and fun. Calm, sharp, and always paying attention — the guardian of the vibes." },
-  { name: "HAMZA", role: "FOUNDER", bio: "Helped start the studio and still writes the core scripts himself. Calm under pressure, obsessed with how things run — if it works smoothly and the world feels right, it's his." },
+  { name: "VEE", role: "FOUNDER", bio: "Helped start the studio and still shapes how the world sees it. Creative, quick, and always thinking about the next big moment for Jester Studios." },
 ];
 
 const developers: TeamMember[] = [
-  { name: "HAMZA", role: "LEAD SCRIPTER/MAP DESIGNER", bio: "The engine behind the studio. Writes the core scripts and designs the map itself — if it runs smoothly and the world feels right, it's his." },
+  { name: "VEE", role: "DEVELOPER/CINEMATOGRAPHER", bio: "Builds alongside the team and frames the world through the camera — making sure every scene looks as good in-game as it does in the trailer." },
   { name: "VERSO", role: "DEVELOPER/MAP DESIGNER/SCRIPTER/GUI DESIGNER", bio: "Touches every layer of the game — builds the map, writes scripts, and designs the menus you click. The all-rounder who turns ideas into playable reality." },
   { name: "NYXEN", role: "DEVELOPER/MANAGER", bio: "Codes features by day and keeps the whole crew on schedule by night. The organized mind that turns chaos into deadlines met." },
   { name: "BUDDI", role: "DEVELOPER/MAP DESIGNER/3D MODEL DESIGNER", bio: "Shapes the world in 3D — designs the map and models every corner of it. A perfectionist who won't ship a scene until it feels exactly right." },
@@ -102,8 +100,7 @@ const developers: TeamMember[] = [
 ];
 
 const socialTeam: TeamMember[] = [
-  { name: "VEE", role: "SOCIAL MEDIA MANAGER/CINEMATOGRAPHER", bio: "The voice and the camera of Jester Studios. Runs the posts and hype, then frames the perfect in-game shots and cinematics that show the world at its best." },
-  { name: "APRIL", role: "SOCIAL MEDIA MANAGER/LEAD EDITOR", bio: "Edits the videos, cuts the highlights, and keeps the feed alive. Lead editor with fresh eyes — quick with a meme and quicker with the render queue." },
+  { name: "GROZA", role: "SOCIAL MEDIA MANAGER", bio: "Runs the posts, the hype and the community chats. Calm, sharp and always online — the voice that keeps players in the loop." },
 ];
 
 const collaborators: TeamMember[] = [
@@ -234,17 +231,35 @@ function JesterCursor() {
         const y = event.clientY / window.innerHeight - 0.5;
         document.documentElement.style.setProperty("--mouse-x", `${x}`);
         document.documentElement.style.setProperty("--mouse-y", `${y}`);
+        document.documentElement.style.setProperty("--px", `${event.clientX}px`);
+        document.documentElement.style.setProperty("--py", `${event.clientY}px`);
       });
     };
     const hide = () => { cursor.dataset["visible"] = "false"; };
     const show = () => { cursor.dataset["visible"] = "true"; };
 
+    const burst = (event: PointerEvent) => {
+      for (let k = 0; k < 8; k++) {
+        const p = document.createElement("span");
+        p.className = "click-spark";
+        p.textContent = ["✦", "★", "♦", "🃏"][k % 4];
+        p.style.left = `${event.clientX}px`;
+        p.style.top = `${event.clientY}px`;
+        const a = (k / 8) * Math.PI * 2;
+        p.style.setProperty("--dx", `${Math.cos(a) * 60}px`);
+        p.style.setProperty("--dy", `${Math.sin(a) * 60}px`);
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 700);
+      }
+    };
+    window.addEventListener("pointerdown", burst);
     window.addEventListener("pointermove", move, { passive: true });
     document.documentElement.addEventListener("mouseleave", hide);
     document.documentElement.addEventListener("mouseenter", show);
     return () => {
       cancelAnimationFrame(frame);
       window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerdown", burst);
       document.documentElement.removeEventListener("mouseleave", hide);
       document.documentElement.removeEventListener("mouseenter", show);
     };
@@ -288,13 +303,14 @@ function Index() {
   return (
     <div className="site-content overflow-x-hidden">
       <JesterCursor />
+      <div className="mouse-spotlight" aria-hidden="true" />
       {openShot && <Lightbox shot={openShot} onClose={() => setOpenShot(null)} />}
       {/* Nav */}
       <header className="fixed inset-x-0 top-0 z-50 border-b border-border bg-background/70 backdrop-blur-lg">
         <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
           <a href="#" className="font-display text-lg font-extrabold">🃏 Jester<span className="text-neon">.</span></a>
           <div className="hidden gap-7 text-sm text-muted-foreground md:flex">
-            {[["About", "#about"], ["Project", "#project"], ["Progress", "#progress"], ["Work", "#work"], ["Teaser", "#teaser"], ["Team", "#team"], ["Support", "#support"]].map(([l, h]) => (
+            {[["About", "#about"], ["Project", "#project"], ["Progress", "#progress"], ["Work", "#work"], ["Builds", "#builds"], ["Teaser", "#teaser"], ["Team", "#team"], ["Support", "#support"]].map(([l, h]) => (
               <a key={h} href={h} className="hover:text-neon transition">{l}</a>
             ))}
           </div>
@@ -444,34 +460,40 @@ function Index() {
         </div>
       </section>
 
-      {/* Teaser 1 */}
+      {/* Builds slider */}
+      <section id="builds" className="py-28 scroll-mt-20">
+        <div className="mx-auto max-w-5xl px-5">
+          <Reveal className="text-center">
+            <p className="font-bold uppercase tracking-widest text-neon text-sm">Build Timeline</p>
+            <h2 className="mt-3 text-3xl font-extrabold sm:text-5xl">Earlier Builds to <span className="text-gradient">Latest Updates</span></h2>
+            <p className="mx-auto mt-5 max-w-2xl text-lg text-muted-foreground">Slide through every screenshot we've shared — from our first builds to the newest updates. Drag, swipe, use the arrows, or tap a picture to open it.</p>
+          </Reveal>
+          <Reveal className="mt-12" delay={120}>
+            <BuildSlider
+              slides={[...workShots.map((s) => ({ ...s, tag: "BEFORE" })), ...updatedProgressShots.map((s) => ({ ...s, tag: "AFTER" }))]}
+              onOpen={(s) => setOpenShot(s)}
+            />
+          </Reveal>
+        </div>
+      </section>
+
+      {/* Teasers */}
       <section id="teaser" className="bg-surface py-28 scroll-mt-20">
         <div className="mx-auto max-w-5xl px-5">
           <Reveal className="text-center">
-            <p className="font-bold uppercase tracking-widest text-neon text-sm">Official Teaser • Konnect Us</p>
-            <h2 className="mt-3 text-3xl font-extrabold sm:text-5xl">Teaser <span className="text-gradient">1</span></h2>
-            <p className="mx-auto mt-5 max-w-3xl text-lg text-muted-foreground">
-              Our very first teaser for Konnect Us. It opens on the glowing Konnect Us sign above our nighttime park — cherry blossoms, lanterns and a campfire under the stars — before fading into "Coming Soon: a new Roblox experience," signed by the Jester Studios jester himself. This is only the beginning: Teaser 2 is on its way, and after that, the final trailer will reveal the full world we've been building.
-            </p>
+            <p className="font-bold uppercase tracking-widest text-neon text-sm">Official Teasers • Konnect Us</p>
+            <h2 className="mt-3 text-3xl font-extrabold sm:text-5xl">Teasers & <span className="text-gradient">Trailer</span></h2>
+            <p className="mx-auto mt-5 max-w-2xl text-lg text-muted-foreground">Something is brewing in the park. Stay tuned — our teasers and the final trailer are on the way.</p>
           </Reveal>
-          <Reveal className="glow-border isolate mt-12" delay={120}>
-            <div className="mouse-tilt overflow-hidden rounded-2xl bg-background p-2">
-              <video
-                className="aspect-video w-full rounded-xl"
-                src={teaserVideo.url}
-                poster={teaserPoster.url}
-                controls
-                playsInline
-                preload="metadata"
-                aria-label="Konnect Us — Teaser 1 by Jester Studios"
-              />
-            </div>
-          </Reveal>
-          <Reveal className="mt-8 flex flex-wrap items-center justify-center gap-3" delay={200}>
-            <span className="rounded-full bg-neon/15 px-3 py-1 text-xs font-bold text-neon">TEASER 1 — OUT NOW</span>
-            <span className="rounded-full bg-muted px-3 py-1 text-xs font-bold text-muted-foreground">TEASER 2 — COMING SOON</span>
-            <span className="rounded-full bg-amber/15 px-3 py-1 text-xs font-bold text-amber">FINAL TRAILER — AFTER THAT</span>
-          </Reveal>
+          <div className="mt-12 grid gap-6 sm:grid-cols-3">
+            {["Teaser 1", "Teaser 2", "Final Trailer"].map((t, i) => (
+              <Reveal key={t} delay={i * 120} className="glass glow-hover mouse-tilt rounded-2xl p-8 text-center">
+                <div className="floaty mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary/20 text-2xl">🎬</div>
+                <h3 className="mt-5 text-xl font-bold">{t}</h3>
+                <span className="mt-4 inline-block rounded-full bg-amber/15 px-3 py-1 text-xs font-bold text-amber">COMING SOON</span>
+              </Reveal>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -580,9 +602,8 @@ function Index() {
       <footer className="border-t border-border bg-surface py-10">
         <div className="mx-auto flex max-w-6xl flex-col items-center gap-5 px-5 text-center text-sm text-muted-foreground">
           <div className="flex flex-wrap justify-center gap-6">
-            <a href={DISCORD} className="hover:text-neon">Discord</a>
+            <a href={DISCORD} target="_blank" rel="noreferrer" className="hover:text-neon">Discord</a>
             <a href={INSTAGRAM} target="_blank" rel="noreferrer" className="hover:text-neon">Instagram</a>
-            <a href={ROBLOX} className="hover:text-neon">Roblox Group</a>
             <a href="#support" className="hover:text-neon">Support/Invest</a>
           </div>
           <p>© {new Date().getFullYear()} Jester Studios • jestercommunity.co</p>

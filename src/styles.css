@@ -168,3 +168,14 @@
   .mouse-drift, .mouse-drift-reverse { translate: none; }
   .jester-cursor { display: none; }
 }
+
+.mouse-spotlight {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background: radial-gradient(500px circle at var(--px, 50%) var(--py, 50%), color-mix(in oklch, var(--primary) 16%, transparent), transparent 60%);
+}
+.click-spark {
+  position: fixed; z-index: 101; pointer-events: none; color: var(--neon); font-size: 14px;
+  translate: -50% -50%; animation: spark .7s ease-out forwards;
+}
+@keyframes spark { to { transform: translate(var(--dx), var(--dy)) scale(.3); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .mouse-spotlight, .click-spark { display: none; } }

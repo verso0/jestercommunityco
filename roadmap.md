@@ -8,3 +8,5 @@
 - [x] Split team into Founders / Developers / Social Media sections, add April (social media manager & editor), and an Ongoing Collaboration section with Angoor Studios (Bacan, Blade, Sam).
 - [x] Raise Konnect Us development to 98% and add a clickable before-and-after progress gallery.
 - [x] Add a Teaser 1 section with the uploaded teaser video, description, and Teaser 2 / final trailer status badges.
+- [x] Team reshuffle (Hamza/April out, Vee to founders+devs, Groza to social), teasers all Coming Soon, build slider, spotlight + click sparks, link check.
+- [ ] Backend — waiting on user to say what it should do.
