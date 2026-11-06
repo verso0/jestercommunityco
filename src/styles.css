@@ -644,9 +644,9 @@ html.lenis, html.lenis body { height: auto; }
 .finale-veil { position: absolute; inset: 0; background: radial-gradient(ellipse at center, transparent, var(--ink) 75%), linear-gradient(var(--ink), transparent 30%, transparent 70%, var(--ink)); }
 .finale .eyebrow { justify-content: center; }
 .cine-footer { position: relative; padding: 4rem 0 2rem; overflow: hidden; border-top: 1px solid var(--border); background: var(--ink); }
-.footer-links { display: flex; flex-wrap: wrap; gap: 1rem 2.5rem; font-size: .9rem; color: var(--muted-foreground); }
+.footer-links { position: relative; z-index: 1; display: flex; flex-wrap: wrap; gap: 1rem 2.5rem; font-size: .9rem; color: var(--muted-foreground); }
 .footer-links a:hover { color: var(--blood); }
-.footer-word { font-family: "Anton", sans-serif; font-size: 27vw; line-height: .8; margin: 2rem 0 1rem; text-align: center; color: transparent; -webkit-text-stroke: 1px color-mix(in oklch, var(--blood) 60%, transparent); background: linear-gradient(transparent 55%, color-mix(in oklch, var(--blood) 35%, transparent)); -webkit-background-clip: text; background-clip: text; }
+.footer-word { pointer-events: none; user-select: none; font-family: "Anton", sans-serif; font-size: 27vw; line-height: .8; margin: 2rem 0 1rem; text-align: center; color: transparent; -webkit-text-stroke: 1px color-mix(in oklch, var(--blood) 60%, transparent); background: linear-gradient(transparent 55%, color-mix(in oklch, var(--blood) 35%, transparent)); -webkit-background-clip: text; background-clip: text; }
 .footer-base { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .5rem; font-size: .75rem; color: var(--muted-foreground); }
 
 /* Lightbox */
