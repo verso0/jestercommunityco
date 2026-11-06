@@ -92,7 +92,7 @@ const founders: TeamMember[] = [
 ];
 
 const developers: TeamMember[] = [
-  { name: "VEE", role: "DEVELOPER/CINEMATOGRAPHER", bio: "Builds alongside the team and frames the world through the camera — making sure every scene looks as good in-game as it does in the trailer." },
+  { name: "VEE", role: "DEVELOPER/CINEMATOGRAPHER/EDITOR", bio: "Builds alongside the team, frames the world through the camera, then cuts it all together — making sure every scene looks as good in-game as it does in the edit." },
   { name: "VERSO", role: "DEVELOPER/MAP DESIGNER/SCRIPTER/GUI DESIGNER", bio: "Touches every layer of the game — builds the map, writes scripts, and designs the menus you click. The all-rounder who turns ideas into playable reality." },
   { name: "NYXEN", role: "DEVELOPER/MANAGER", bio: "Codes features by day and keeps the whole crew on schedule by night. The organized mind that turns chaos into deadlines met." },
   { name: "BUDDI", role: "DEVELOPER/MAP DESIGNER/3D MODEL DESIGNER", bio: "Shapes the world in 3D — designs the map and models every corner of it. A perfectionist who won't ship a scene until it feels exactly right." },
@@ -100,6 +100,7 @@ const developers: TeamMember[] = [
 ];
 
 const socialTeam: TeamMember[] = [
+  { name: "VEE", role: "SOCIAL MEDIA/DEVELOPER/CINEMATOGRAPHER/EDITOR", bio: "Shoots the cinematics, edits the clips and shares them with the world — the eye behind how Jester Studios looks online." },
   { name: "GROZA", role: "SOCIAL MEDIA MANAGER", bio: "Runs the posts, the hype and the community chats. Calm, sharp and always online — the voice that keeps players in the loop." },
 ];
 
@@ -273,7 +274,15 @@ function Index() {
 
   useEffect(() => {
     const io = new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting && e.target.classList.add("in")), { threshold: 0.15 });
-    document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
+    const variants = ["rv-up", "rv-left", "rv-right", "rv-zoom", "rv-flip", "rv-blur"];
+    document.querySelectorAll(".reveal").forEach((el, i) => { el.classList.add(variants[i % variants.length] ?? "rv-up"); io.observe(el); });
+    const bar = document.querySelector<HTMLElement>(".scroll-bar");
+    const onScroll = () => {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      if (bar) bar.style.transform = `scaleX(${max > 0 ? window.scrollY / max : 0})`;
+      document.documentElement.style.setProperty("--scroll", `${window.scrollY}`);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
 
     const tilts = [...document.querySelectorAll<HTMLElement>(".mouse-tilt")];
     const cleanups = tilts.map((element) => {
@@ -296,6 +305,7 @@ function Index() {
 
     return () => {
       io.disconnect();
+      window.removeEventListener("scroll", onScroll);
       cleanups.forEach((cleanup) => cleanup());
     };
   }, []);
@@ -304,6 +314,14 @@ function Index() {
     <div className="site-content overflow-x-hidden">
       <JesterCursor />
       <div className="mouse-spotlight" aria-hidden="true" />
+      <div className="scroll-bar" aria-hidden="true" />
+      <div className="bg-particles" aria-hidden="true">
+        {Array.from({ length: 18 }, (_, i) => (
+          <span key={i} style={{ left: `${(i * 37) % 100}%`, animationDelay: `${(i * 1.3) % 12}s`, animationDuration: `${12 + (i % 6) * 3}s`, fontSize: `${12 + (i % 4) * 6}px` }}>
+            {["🃏", "✦", "♦", "★", "♣", "♠"][i % 6]}
+          </span>
+        ))}
+      </div>
       {openShot && <Lightbox shot={openShot} onClose={() => setOpenShot(null)} />}
       {/* Nav */}
       <header className="fixed inset-x-0 top-0 z-50 border-b border-border bg-background/70 backdrop-blur-lg">
@@ -496,6 +514,14 @@ function Index() {
           </div>
         </div>
       </section>
+
+      <div className="marquee-strip" aria-hidden="true">
+        <div className="marquee-track">
+          {Array.from({ length: 2 }, (_, k) => (
+            <span key={k}>KONNECT US ✦ COMING SOON ✦ JESTER STUDIOS ✦ 98% BUILT ✦ INDIE & PROUD ✦ JOIN THE CREW ✦&nbsp;</span>
+          ))}
+        </div>
+      </div>
 
       {/* Support */}
       <section id="support" className="bg-surface py-28">
