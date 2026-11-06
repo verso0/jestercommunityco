@@ -87,7 +87,7 @@ const DECK_INTRO: Record<string, string> = {
   "Angoor Studios": "An ongoing collaborator from Angoor Studios, working side by side with us on this project.",
 };
 
-export function MemberDossier({ member, deck, src, onClose }: { member: DossierMember | null; deck: string; src?: string | null; onClose: () => void }) {
+export function MemberDossier({ member, deck, src, onClose }: { member: DossierMember | null; deck: string; src?: string | null | undefined; onClose: () => void }) {
   const roles = member ? member.role.split("/").map((r) => r.trim().toUpperCase()).filter(Boolean) : [];
   return (
     <Dialog open={!!member} onOpenChange={(o) => !o && onClose()}>
