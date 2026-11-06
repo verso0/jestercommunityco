@@ -5,6 +5,7 @@ import workShot1 from "@/assets/work-1.jpg.asset.json";
 import workShot2 from "@/assets/work-2.jpg.asset.json";
 import workShot3 from "@/assets/work-3.jpg.asset.json";
 import workShot4 from "@/assets/work-4.jpg.asset.json";
+import { HorrorFX, WatchingEyes } from "@/components/HorrorFX";
 import avGroza from "@/assets/avatar-groza.jpg.asset.json";
 import avBuddi from "@/assets/avatar-buddi.jpg.asset.json";
 import avBlade from "@/assets/avatar-blade.jpg.asset.json";
@@ -189,7 +190,8 @@ function Lightbox({ shot, onClose }: { shot: (typeof workShots)[number]; onClose
 
 function TeamCard({ m, i, perRow = 3 }: { m: TeamMember; i: number; perRow?: 2 | 3 | 4 | 5 }) {
   return (
-    <Reveal delay={(i % perRow) * 120} className="glass glow-hover mouse-tilt rounded-2xl p-7 text-center">
+    <Reveal delay={(i % perRow) * 120} className="team-card glass glow-hover mouse-tilt relative rounded-2xl p-7 text-center">
+      <div className="corrupt" aria-hidden="true" />
       <div className="heartbeat mx-auto h-24 w-24 rounded-full" style={{ ["--d" as string]: i }}>
         {(m.avatar ?? AVATARS[m.name]) ? (
           <img src={m.avatar ?? AVATARS[m.name]} alt={`${m.name} avatar`} loading="lazy" className="h-full w-full rounded-full object-cover ring-2 ring-primary/60" />
@@ -349,6 +351,7 @@ function Index() {
   return (
     <div className="site-content page-enter overflow-x-hidden">
       <JesterCursor />
+      <HorrorFX />
       <div className="mouse-spotlight" aria-hidden="true" />
       <div className="scroll-bar" aria-hidden="true" />
       <div className="bg-particles" aria-hidden="true">
@@ -396,12 +399,13 @@ function Index() {
         <div className="floaty mouse-drift pointer-events-none absolute right-[10%] top-1/4 hidden text-7xl lg:block">🎲</div>
         <div className="floaty mouse-drift-reverse pointer-events-none absolute left-[8%] bottom-1/4 hidden text-6xl lg:block" style={{ animationDelay: "2s" }}>🎮</div>
         <div className="hero-parallax relative mx-auto max-w-5xl px-5 text-center">
+          <WatchingEyes className="mb-8 justify-center" />
           <Reveal>
             <span className="glass mouse-tilt inline-block rounded-full px-4 py-1.5 text-sm text-muted-foreground">🃏 Jester Studios • Indie Roblox Development</span>
           </Reveal>
           <Reveal delay={100}>
             <h1 className="mt-8 text-4xl font-extrabold leading-tight sm:text-6xl md:text-7xl">
-              Playful Chaos.<br /><span className="text-gradient">Serious Passion.</span>
+              <span className="glitch-title" data-text="Playful Chaos.">Playful Chaos.</span><br /><span className="glitch-title text-gradient" data-text="Serious Passion.">Serious Passion.</span>
             </h1>
           </Reveal>
           <Reveal delay={200}>
@@ -416,6 +420,7 @@ function Index() {
         </div>
       </section>
 
+      <div className="drip-divider relative z-[2]" aria-hidden="true" />
       {/* About */}
       <section id="about" className="bg-surface py-28">
         <div className="mx-auto grid max-w-6xl gap-12 px-5 md:grid-cols-2 md:items-center">

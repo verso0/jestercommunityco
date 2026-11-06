@@ -284,3 +284,68 @@ body::after {
 @keyframes fill-in { from { transform: scaleX(0); } }
 .admin-shell .site-content h1 { animation: none; }
 @media (prefers-reduced-motion: reduce) { .page-enter, .progress-fill { animation: none; } .hero-parallax { transform: none; opacity: 1; } }
+
+/* ===== Full horror mode ===== */
+.film-grain { position: fixed; inset: -50%; z-index: 88; pointer-events: none; opacity: .09;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  animation: grain .6s steps(4) infinite; }
+@keyframes grain { 0% { transform: translate(0,0); } 25% { transform: translate(-4%,3%); } 50% { transform: translate(3%,-5%); } 75% { transform: translate(-2%,-2%); } }
+.screen-tear { position: fixed; inset: 0; z-index: 95; pointer-events: none; animation: tear .26s steps(3) forwards;
+  background: linear-gradient(transparent 30%, color-mix(in oklch, var(--amber) 35%, transparent) 30% 33%, transparent 33% 61%, oklch(1 0 0 / 18%) 61% 62%, transparent 62%);
+  backdrop-filter: hue-rotate(90deg) saturate(2); }
+@keyframes tear { 0% { transform: translateX(-20px); } 50% { transform: translateX(25px) scaleY(1.1); } 100% { transform: none; opacity: 0; } }
+.blood-trail { position: fixed; z-index: 99; pointer-events: none; width: 7px; height: 7px; border-radius: 50% 50% 50% 0;
+  translate: -50% -50%; rotate: -45deg; background: var(--amber); box-shadow: 0 0 8px var(--primary); animation: drip .9s ease-in forwards; }
+@keyframes drip { to { transform: translate(6px, 26px) scale(.2); opacity: 0; } }
+
+.boot-intro { position: fixed; inset: 0; z-index: 200; display: grid; place-items: center; background: var(--background); animation: boot-out .5s ease 2.1s forwards; }
+.boot-inner { text-align: center; font-family: var(--font-sans); }
+.boot-line { color: var(--amber); letter-spacing: .2em; font-size: .8rem; opacity: 0; animation: boot-type .3s steps(8) forwards; }
+.boot-logo { margin: 1.25rem 0; font-size: clamp(2rem, 8vw, 5rem); font-weight: 900; animation: boot-flash 2s steps(1) infinite; }
+@keyframes boot-type { to { opacity: 1; } }
+@keyframes boot-out { to { opacity: 0; visibility: hidden; clip-path: inset(50% 0 50% 0); } }
+@keyframes boot-flash { 0%, 100% { opacity: 1; } 47% { opacity: .2; } 48% { opacity: 1; } }
+
+.glitch-title { position: relative; display: inline-block; }
+.glitch-title::before, .glitch-title::after { content: attr(data-text); position: absolute; inset: 0; pointer-events: none; }
+.glitch-title::before { color: var(--amber); animation: rgb-a 2.4s infinite steps(2); clip-path: inset(0 0 60% 0); }
+.glitch-title::after { color: var(--neon); animation: rgb-b 3.1s infinite steps(2); clip-path: inset(55% 0 0 0); mix-blend-mode: screen; opacity: .6; }
+@keyframes rgb-a { 0%, 80%, 100% { transform: none; } 82% { transform: translate(-5px, -2px); } 86% { transform: translate(4px, 1px); } 90% { transform: translate(-2px, 0); } }
+@keyframes rgb-b { 0%, 70%, 100% { transform: none; } 72% { transform: translate(5px, 2px); } 77% { transform: translate(-4px, -1px); } }
+
+.watching-eyes { display: flex; gap: 18px; }
+.watching-eyes .eye { position: relative; width: 46px; height: 28px; border-radius: 50%; background: var(--neon); overflow: hidden;
+  box-shadow: 0 0 24px var(--primary), inset 0 -6px 10px oklch(0 0 0 / 40%); animation: blink 5s infinite; }
+.watching-eyes .eye i { position: absolute; left: 50%; top: 50%; width: 16px; height: 16px; border-radius: 50%; background: var(--primary);
+  box-shadow: inset 0 0 0 5px var(--background);
+  translate: calc(-50% + var(--mouse-x, 0) * 26px) calc(-50% + var(--mouse-y, 0) * 14px); transition: translate .1s; }
+@keyframes blink { 0%, 94%, 100% { transform: scaleY(1); } 96% { transform: scaleY(.05); } }
+
+.drip-divider { height: 46px; background:
+  radial-gradient(circle at 10% 0, var(--primary) 12px, transparent 13px),
+  radial-gradient(circle at 37% 0, var(--primary) 18px, transparent 19px),
+  radial-gradient(circle at 64% 0, var(--primary) 10px, transparent 11px),
+  radial-gradient(circle at 88% 0, var(--primary) 15px, transparent 16px),
+  linear-gradient(var(--primary) 0 6px, transparent 6px);
+  background-size: 220px 46px; animation: drip-flow 7s ease-in-out infinite alternate; opacity: .8; }
+@keyframes drip-flow { to { background-size: 220px 70px; height: 60px; } }
+
+/* Team card: holo shine following mouse + corrupt avatar on hover */
+.mouse-tilt:not(.glow-border) { overflow: hidden; }
+.mouse-tilt::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .3s;
+  background: radial-gradient(260px circle at 50% 0%, color-mix(in oklch, var(--amber) 22%, transparent), transparent 70%); }
+.mouse-tilt:hover::after { opacity: 1; }
+.team-card:hover .heartbeat img { animation: img-glitch .45s steps(2) infinite; }
+.team-card .corrupt { position: absolute; inset: 0; pointer-events: none; opacity: 0;
+  background: repeating-linear-gradient(0deg, transparent 0 3px, color-mix(in oklch, var(--amber) 10%, transparent) 3px 4px); }
+.team-card:hover .corrupt { opacity: 1; animation: flicker 1s infinite; }
+
+@media (pointer: coarse), (max-width: 640px) {
+  .film-grain { opacity: .05; animation: none; }
+  .bg-particles span:nth-child(n+9) { display: none; }
+  .mouse-spotlight { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .film-grain, .screen-tear, .blood-trail, .boot-intro { display: none; }
+  .glitch-title::before, .glitch-title::after, .watching-eyes .eye, .drip-divider { animation: none; }
+}
