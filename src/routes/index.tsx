@@ -1,3 +1,4 @@
+import { MemberDossier } from "@/components/MemberDossier";
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { MessageCircle, Camera, Heart, Handshake, Coffee, Copy, Check, Hammer, X, ZoomIn } from "lucide-react";
@@ -225,13 +226,18 @@ function JesterCursor() {
   return <div ref={cursorRef} className="jester-cursor" aria-hidden="true"><span>🃏</span></div>;
 }
 
-function TarotCard({ m, i, total }: { m: TeamMember; i: number; total: number }) {
+function TarotCard({ m, i, total, onOpen }: { m: TeamMember; i: number; total: number; onOpen: () => void }) {
   const src = m.avatar ?? AVATARS[m.name];
   const ref = useRef<HTMLDivElement>(null);
   return (
     <div
       ref={ref}
-      className="tarot"
+      className="tarot cursor-pointer"
+      role="button"
+      tabIndex={0}
+      aria-label={`Open ${m.name} profile`}
+      onClick={onOpen}
+      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpen(); } }}
       style={{ ["--i" as string]: i }}
       onPointerMove={(e) => {
         const r = ref.current!.getBoundingClientRect();
@@ -262,6 +268,7 @@ function toRoman(n: number) {
 }
 
 function Deck({ title, n, members }: { title: string; n: string; members: TeamMember[] }) {
+  const [open, setOpen] = useState<TeamMember | null>(null);
   return (
     <div className="deck">
       <div className="deck-head" data-rise>
@@ -270,8 +277,9 @@ function Deck({ title, n, members }: { title: string; n: string; members: TeamMe
         <span className="deck-count">{String(members.length).padStart(2, "0")} CARDS</span>
       </div>
       <div className="deck-row" data-rise><div data-stagger className="deck-grid">
-        {members.map((m, i) => <TarotCard key={`${title}-${m.name}`} m={m} i={i} total={members.length} />)}
+        {members.map((m, i) => <TarotCard key={`${title}-${m.name}`} m={m} i={i} total={members.length} onOpen={() => setOpen(m)} />)}
       </div></div>
+      <MemberDossier member={open} deck={title} src={open ? open.avatar ?? AVATARS[open.name] : null} onClose={() => setOpen(null)} />
     </div>
   );
 }
