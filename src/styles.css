@@ -730,3 +730,8 @@ html.lenis, html.lenis body { height: auto; }
 @media (prefers-reduced-motion: reduce) {
   .hero-lightning, .hero-heartbeat, .hero-ash, .hero-title, .tarot-inner, .tarot:hover .tarot-inner { animation: none !important; }
 }
+
+/* Hide Google Translate banner */
+.skiptranslate iframe, .goog-te-banner-frame { display: none !important; }
+body { top: 0 !important; }
+#goog-gt-tt, .goog-te-balloon-frame { display: none !important; }

@@ -3,7 +3,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 /** Splits text into masked characters for [data-split] reveals. Screen readers get the plain text. */
 export function Split({ text, className = "", delay = 0 }: { text: string; className?: string; delay?: number }) {
   return (
-    <span data-split={delay} className={`split ${className}`} aria-label={text}>
+    <span data-split={delay} className={`split notranslate ${className}`} translate="no" aria-label={text}>
       {text.split(" ").map((word, wi) => (
         <span key={wi} className="split-word" aria-hidden="true">
           {[...word].map((c, ci) => <span key={ci} className="ch">{c}</span>)}
@@ -61,7 +61,7 @@ export function Loader({ srcs, onDone }: { srcs: string[]; onDone: () => void })
       <div className="loader-shutter loader-shutter-bottom" />
       <div className="loader-core">
         <p className="loader-tag">JESTER STUDIOS // SIGNAL {String(pct).padStart(3, "0")}</p>
-        <h2 className="glitch-title loader-logo" data-text="JESTER">JESTER</h2>
+        <h2 className="glitch-title loader-logo notranslate" data-text="JESTER">JESTER</h2>
         <div className="loader-bar"><span style={{ transform: `scaleX(${pct / 100})` }} /></div>
         <p className="loader-tag">{pct < 100 ? "WAKING THE JESTER…" : "DON'T LOOK AWAY"}</p>
       </div>

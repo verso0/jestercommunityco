@@ -106,7 +106,7 @@ export function MemberDossier({ member, deck, src, onClose }: { member: DossierM
               <div className="h-32 w-32 overflow-hidden rounded-full border-2 border-primary/60">
                 {src ? <img src={src} alt={`${member.name} avatar`} className="h-full w-full object-cover" /> : <span className="flex h-full items-center justify-center text-5xl">🃏</span>}
               </div>
-              <DialogTitle className="text-4xl uppercase">{member.name}</DialogTitle>
+              <DialogTitle className="notranslate text-4xl uppercase">{member.name}</DialogTitle>
               <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">{roles.join(" · ")}</p>
               <DialogDescription className="max-w-md text-base text-foreground/90">{member.bio}</DialogDescription>
             </div>

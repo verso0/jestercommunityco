@@ -254,7 +254,7 @@ function TarotCard({ m, i, total, onOpen }: { m: TeamMember; i: number; total: n
           {src ? <img src={src} alt={`${m.name} avatar`} loading="lazy" /> : <span className="text-5xl">🃏</span>}
           <span className="tarot-scan" aria-hidden="true" />
         </div>
-        <h3 className="tarot-name glitch-title" data-text={m.name}>{m.name}</h3>
+        <h3 className="tarot-name glitch-title notranslate" data-text={m.name}>{m.name}</h3>
         <p className="tarot-role">{m.role.split("/").join(" · ")}</p>
         <p className="tarot-bio">{m.bio}</p>
         <span className="tarot-glare" aria-hidden="true" />
@@ -342,7 +342,7 @@ function Index() {
       {/* Nav */}
       <header className="cine-nav">
         <nav className="mx-auto flex max-w-[1500px] items-center justify-between px-5 py-4 sm:px-8">
-          <a href="#" className="cine-logo"><span className="cine-logo-mark">🃏</span> JESTER<em>studios</em></a>
+          <a href="#" className="cine-logo notranslate"><span className="cine-logo-mark">🃏</span> JESTER<em>studios</em></a>
           <div className="nav-pill hidden lg:flex">
             {navLinks.map(([l, id]) => (
               <a key={id} href={`#${id}`} className={`nav-pill-link ${activeId === id ? "is-active" : ""}`}>{l}</a>
