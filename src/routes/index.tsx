@@ -22,6 +22,10 @@ import progressAfter4 from "@/assets/progress-after-full-4.jpg.asset.json";
 import progressAfter5 from "@/assets/progress-after-full-5.jpg.asset.json";
 import progressAfter6 from "@/assets/progress-after-full-6.jpg.asset.json";
 import { BuildSlider } from "@/components/BuildSlider";
+import { Link } from "@tanstack/react-router";
+import { useSiteData } from "@/lib/site-data";
+import { useAuth } from "@/hooks/use-auth";
+import { supabase } from "@/integrations/supabase/client";
 
 const AVATARS: Record<string, string> = {
   GROZA: avGroza.url, BUDDI: avBuddi.url, BLADE: avBlade.url, BACAN: avBacan.url, VEE: avVee.url,
@@ -81,7 +85,7 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-type TeamMember = { name: string; role: string; bio: string };
+type TeamMember = { name: string; role: string; bio: string; avatar?: string | null };
 
 const founders: TeamMember[] = [
   { name: "VERSO", role: "FOUNDER", bio: "Crafts models with obsessive detail by day, keeps the community smiling by night. The friendly bridge between the studio and its players." },
@@ -187,8 +191,8 @@ function TeamCard({ m, i, perRow = 3 }: { m: TeamMember; i: number; perRow?: 2 |
   return (
     <Reveal delay={(i % perRow) * 120} className="glass glow-hover mouse-tilt rounded-2xl p-7 text-center">
       <div className="heartbeat mx-auto h-24 w-24 rounded-full" style={{ ["--d" as string]: i }}>
-        {AVATARS[m.name] ? (
-          <img src={AVATARS[m.name]} alt={`${m.name} avatar`} loading="lazy" className="h-full w-full rounded-full object-cover ring-2 ring-primary/60" />
+        {(m.avatar ?? AVATARS[m.name]) ? (
+          <img src={m.avatar ?? AVATARS[m.name]} alt={`${m.name} avatar`} loading="lazy" className="h-full w-full rounded-full object-cover ring-2 ring-primary/60" />
         ) : (
           <div className="flex h-full w-full items-center justify-center rounded-full bg-gradient-to-br from-primary to-neon/60 text-3xl">🃏</div>
         )}
@@ -271,11 +275,35 @@ function JesterCursor() {
 
 function Index() {
   const [openShot, setOpenShot] = useState<(typeof workShots)[number] | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [activeId, setActiveId] = useState("");
+  const { data: site } = useSiteData();
+  const { user, isAdmin } = useAuth();
+  const text = (k: string, d: string) => site?.content[k] ?? d;
+  const beforeShots = site?.before.length ? site.before : workShots;
+  const afterShots = site?.after.length ? site.after : updatedProgressShots;
+  const pct = Math.max(0, Math.min(100, Number.parseInt(text("progress_percent", "98"), 10) || 98));
+  const team = {
+    founders: site?.team.founders.length ? site.team.founders : founders,
+    developers: site?.team.developers.length ? site.team.developers : developers,
+    social: site?.team.social.length ? site.team.social : socialTeam,
+    collaborators: site?.team.collaborators.length ? site.team.collaborators : collaborators,
+  };
+  const videoSlots = site?.videos.length ? site.videos : [
+    { slot: "teaser1", title: "Teaser 1", description: "", videoUrl: null, thumbUrl: null, published: false },
+    { slot: "teaser2", title: "Teaser 2", description: "", videoUrl: null, thumbUrl: null, published: false },
+    { slot: "final", title: "Final Trailer", description: "", videoUrl: null, thumbUrl: null, published: false },
+  ];
 
   useEffect(() => {
     const io = new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting && e.target.classList.add("in")), { threshold: 0.15 });
     const variants = ["rv-up", "rv-left", "rv-right", "rv-zoom", "rv-flip", "rv-blur"];
-    document.querySelectorAll(".reveal").forEach((el, i) => { el.classList.add(variants[i % variants.length] ?? "rv-up"); io.observe(el); });
+    document.querySelectorAll(".reveal").forEach((el, i) => {
+      if (![...el.classList].some((c) => c.startsWith("rv-"))) el.classList.add(variants[i % variants.length] ?? "rv-up");
+      if (!el.classList.contains("in")) io.observe(el);
+    });
+    const spy = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) setActiveId(e.target.id); }), { rootMargin: "-45% 0px -50% 0px" });
+    document.querySelectorAll("section[id]").forEach((el) => spy.observe(el));
     const bar = document.querySelector<HTMLElement>(".scroll-bar");
     const onScroll = () => {
       const max = document.documentElement.scrollHeight - window.innerHeight;
@@ -305,13 +333,20 @@ function Index() {
 
     return () => {
       io.disconnect();
+      spy.disconnect();
       window.removeEventListener("scroll", onScroll);
       cleanups.forEach((cleanup) => cleanup());
     };
-  }, []);
+  }, [site]);
+
+  async function signOut() {
+    await supabase.auth.signOut();
+  }
+
+  const navLinks = [["About", "about"], ["Project", "project"], ["Progress", "progress"], ["Work", "work"], ["Builds", "builds"], ["Teaser", "teaser"], ["Team", "team"], ["Support", "support"]];
 
   return (
-    <div className="site-content overflow-x-hidden">
+    <div className="site-content page-enter overflow-x-hidden">
       <JesterCursor />
       <div className="mouse-spotlight" aria-hidden="true" />
       <div className="scroll-bar" aria-hidden="true" />
@@ -327,13 +362,30 @@ function Index() {
       <header className="fixed inset-x-0 top-0 z-50 border-b border-border bg-background/70 backdrop-blur-lg">
         <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
           <a href="#" className="font-display text-lg font-extrabold">🃏 Jester<span className="text-neon">.</span></a>
-          <div className="hidden gap-7 text-sm text-muted-foreground md:flex">
-            {[["About", "#about"], ["Project", "#project"], ["Progress", "#progress"], ["Work", "#work"], ["Builds", "#builds"], ["Teaser", "#teaser"], ["Team", "#team"], ["Support", "#support"]].map(([l, h]) => (
-              <a key={h} href={h} className="hover:text-neon transition">{l}</a>
+          <div className="hidden gap-6 text-sm text-muted-foreground lg:flex">
+            {navLinks.map(([l, id]) => (
+              <a key={id} href={`#${id}`} className={`nav-link transition hover:text-foreground ${activeId === id ? "is-active text-foreground" : ""}`}>{l}</a>
             ))}
           </div>
-          <a href={DISCORD} target="_blank" rel="noreferrer" className="rounded-lg bg-primary px-4 py-2 text-sm font-bold text-primary-foreground">Discord</a>
+          <div className="flex items-center gap-2">
+            {isAdmin && <Link to="/admin" className="hidden rounded-lg border border-amber/60 px-3 py-2 text-sm font-bold text-amber sm:inline-block">Dashboard</Link>}
+            {user ? (
+              <button onClick={() => void signOut()} className="hidden rounded-lg border border-border px-3 py-2 text-sm font-bold sm:inline-block">Log out</button>
+            ) : (
+              <Link to="/login" className="hidden rounded-lg border border-border px-3 py-2 text-sm font-bold sm:inline-block">Sign in</Link>
+            )}
+            <a href={DISCORD} target="_blank" rel="noreferrer" className="rounded-lg bg-primary px-4 py-2 text-sm font-bold text-primary-foreground">Discord</a>
+            <button onClick={() => setMenuOpen((o) => !o)} aria-label="Open menu" aria-expanded={menuOpen} className="rounded-lg border border-border px-3 py-2 text-sm font-bold lg:hidden">{menuOpen ? "✕" : "☰"}</button>
+          </div>
         </nav>
+        <div className={`mobile-menu lg:hidden ${menuOpen ? "open" : ""}`}>
+          {navLinks.map(([l, id], i) => (
+            <a key={id} href={`#${id}`} onClick={() => setMenuOpen(false)} style={{ transitionDelay: `${i * 40}ms` }} className={activeId === id ? "text-amber" : ""}>{l}</a>
+          ))}
+          {user ? <button onClick={() => void signOut()}>Log out</button> : <Link to="/login">Sign in</Link>}
+          {isAdmin && <Link to="/admin">Dashboard</Link>}
+          <Link to="/admin-login" className="text-amber">Admin Login</Link>
+        </div>
       </header>
 
       {/* Hero */}
@@ -342,7 +394,7 @@ function Index() {
         <div className="mouse-drift-reverse pointer-events-none absolute -right-20 bottom-10 h-80 w-80 rounded-full bg-neon/20 blur-[120px]" />
         <div className="floaty mouse-drift pointer-events-none absolute right-[10%] top-1/4 hidden text-7xl lg:block">🎲</div>
         <div className="floaty mouse-drift-reverse pointer-events-none absolute left-[8%] bottom-1/4 hidden text-6xl lg:block" style={{ animationDelay: "2s" }}>🎮</div>
-        <div className="relative mx-auto max-w-5xl px-5 text-center">
+        <div className="hero-parallax relative mx-auto max-w-5xl px-5 text-center">
           <Reveal>
             <span className="glass mouse-tilt inline-block rounded-full px-4 py-1.5 text-sm text-muted-foreground">🃏 Jester Studios • Indie Roblox Development</span>
           </Reveal>
@@ -386,13 +438,13 @@ function Index() {
               <h2 className="mt-6 text-3xl font-extrabold sm:text-5xl">[Konnect Us / <span className="text-amber">Classified</span>]</h2>
               <p className="mt-4 max-w-2xl text-lg text-muted-foreground">Our inaugural Roblox experience is underway. Focused on snappy mechanics, collaborative multiplayer fun, and high replayability.</p>
               <div className="mt-8">
-                <div className="mb-2 flex justify-between text-sm"><span className="text-muted-foreground">Development progress</span><span className="font-bold text-neon">98%</span></div>
+                <div className="mb-2 flex justify-between text-sm"><span className="text-muted-foreground">Development progress</span><span className="font-bold text-neon">{pct}%</span></div>
                 <div className="h-3 overflow-hidden rounded-full bg-muted">
-                  <div className="h-full w-[98%] rounded-full bg-gradient-to-r from-neon via-primary to-amber" />
+                  <div className="progress-fill h-full rounded-full bg-gradient-to-r from-neon via-primary to-amber" style={{ width: `${pct}%` }} />
                 </div>
               </div>
               <div className="mt-8 flex flex-wrap items-center gap-4">
-                <span className="rounded-lg border border-amber/50 px-3 py-1.5 text-sm font-bold text-amber">COMING SOON</span>
+                <span className="rounded-lg border border-amber/50 px-3 py-1.5 text-sm font-bold text-amber">{text("project_status", "COMING SOON")}</span>
                 <Btn href="#progress" variant="ghost"><ZoomIn size={18} /> Check Progress</Btn>
               </div>
             </div>
@@ -416,7 +468,7 @@ function Index() {
             </div>
           </Reveal>
           <div className="mt-8 grid gap-6 sm:grid-cols-2">
-            {workShots.map((shot, i) => (
+            {beforeShots.map((shot, i) => (
               <Reveal key={`before-${shot.src}`} delay={(i % 2) * 120} className="glass glow-hover mouse-tilt group rounded-2xl p-2">
                 <button onClick={() => setOpenShot(shot)} className="relative block w-full cursor-pointer overflow-hidden rounded-xl" aria-label={`Open earlier view: ${shot.caption}`}>
                   <img src={shot.src} alt={`Earlier Konnect Us build — ${shot.caption}`} loading="lazy" className="aspect-video w-full object-cover transition duration-500 group-hover:scale-[1.04]" />
@@ -430,11 +482,11 @@ function Index() {
           <Reveal className="mt-20">
             <div className="flex flex-wrap items-end justify-between gap-3 border-b border-neon/30 pb-5">
               <div><span className="text-sm font-bold uppercase tracking-widest text-neon">Latest build</span><h3 className="mt-2 text-2xl font-extrabold">After the updates</h3></div>
-              <span className="rounded-full bg-neon/15 px-3 py-1 text-xs font-bold text-neon">98% COMPLETE</span>
+              <span className="rounded-full bg-neon/15 px-3 py-1 text-xs font-bold text-neon">{pct}% COMPLETE</span>
             </div>
           </Reveal>
           <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {updatedProgressShots.map((shot, i) => (
+            {afterShots.map((shot, i) => (
               <Reveal key={shot.src} delay={(i % 3) * 100} className="glass glow-hover mouse-tilt group rounded-2xl p-2">
                 <button onClick={() => setOpenShot(shot)} className="relative block w-full cursor-pointer overflow-hidden rounded-xl" aria-label={`Open updated view: ${shot.caption}`}>
                   <img src={shot.src} alt={`Updated Konnect Us build — ${shot.caption}`} loading="lazy" className="aspect-video w-full object-contain transition duration-500 group-hover:scale-[1.04]" />
@@ -455,11 +507,11 @@ function Index() {
             <p className="font-bold uppercase tracking-widest text-amber text-sm">Our Work</p>
             <h2 className="mt-3 text-3xl font-extrabold sm:text-5xl">A Small Glimpse of <span className="text-gradient">How We Work</span></h2>
             <p className="mx-auto mt-5 max-w-2xl text-lg text-muted-foreground">
-              These earlier shots come straight from our current project, before our latest updates — a small example of how we started and how we work. Keep in mind: we're fully indie, and this is our very first game.
+              {text("work_intro", "These earlier shots come straight from our current project, before our latest updates — a small example of how we started and how we work. Keep in mind: we're fully indie, and this is our very first game.")}
             </p>
           </Reveal>
           <div className="mt-14 grid gap-6 sm:grid-cols-2">
-            {workShots.map((shot, i) => (
+            {beforeShots.map((shot, i) => (
               <Reveal key={shot.src} delay={(i % 2) * 120} className="glass glow-hover mouse-tilt group rounded-2xl p-2">
                 <button onClick={() => setOpenShot(shot)} className="relative block w-full cursor-pointer overflow-hidden rounded-xl" aria-label={`Open ${shot.caption}`}>
                   <img src={shot.src} alt={`Work in progress by Jester Studios — ${shot.caption}`} loading="lazy"
@@ -488,7 +540,7 @@ function Index() {
           </Reveal>
           <Reveal className="mt-12" delay={120}>
             <BuildSlider
-              slides={[...workShots.map((s) => ({ ...s, tag: "BEFORE" })), ...updatedProgressShots.map((s) => ({ ...s, tag: "AFTER" }))]}
+              slides={[...beforeShots.map((s) => ({ ...s, tag: "BEFORE" })), ...afterShots.map((s) => ({ ...s, tag: "AFTER" }))]}
               onOpen={(s) => setOpenShot(s)}
             />
           </Reveal>
@@ -501,14 +553,23 @@ function Index() {
           <Reveal className="text-center">
             <p className="font-bold uppercase tracking-widest text-neon text-sm">Official Teasers • Konnect Us</p>
             <h2 className="mt-3 text-3xl font-extrabold sm:text-5xl">Teasers & <span className="text-gradient">Trailer</span></h2>
-            <p className="mx-auto mt-5 max-w-2xl text-lg text-muted-foreground">Something is brewing in the park. Stay tuned — our teasers and the final trailer are on the way.</p>
+            <p className="mx-auto mt-5 max-w-2xl text-lg text-muted-foreground">{text("teaser_intro", "Something is brewing in the park. Stay tuned — our teasers and the final trailer are on the way.")}</p>
           </Reveal>
           <div className="mt-12 grid gap-6 sm:grid-cols-3">
-            {["Teaser 1", "Teaser 2", "Final Trailer"].map((t, i) => (
-              <Reveal key={t} delay={i * 120} className="glass glow-hover mouse-tilt rounded-2xl p-8 text-center">
-                <div className="floaty mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary/20 text-2xl">🎬</div>
-                <h3 className="mt-5 text-xl font-bold">{t}</h3>
-                <span className="mt-4 inline-block rounded-full bg-amber/15 px-3 py-1 text-xs font-bold text-amber">COMING SOON</span>
+            {videoSlots.map((v, i) => (
+              <Reveal key={v.slot} delay={i * 120} className={`glass glow-hover mouse-tilt rounded-2xl text-center ${v.videoUrl ? "p-2 sm:col-span-3" : "p-8"}`}>
+                {v.videoUrl ? (
+                  <>
+                    <video src={v.videoUrl} poster={v.thumbUrl ?? undefined} controls playsInline preload="none" className="aspect-video w-full rounded-xl bg-background" aria-label={v.title} />
+                    <div className="p-4"><h3 className="text-xl font-bold">{v.title}</h3>{v.description && <p className="mx-auto mt-2 max-w-2xl text-muted-foreground">{v.description}</p>}<span className="mt-3 inline-block rounded-full bg-foreground/15 px-3 py-1 text-xs font-bold">OUT NOW</span></div>
+                  </>
+                ) : (
+                  <>
+                    <div className="floaty mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary/20 text-2xl">🎬</div>
+                    <h3 className="mt-5 text-xl font-bold">{v.title}</h3>
+                    <span className="mt-4 inline-block rounded-full bg-amber/15 px-3 py-1 text-xs font-bold text-amber">COMING SOON</span>
+                  </>
+                )}
               </Reveal>
             ))}
           </div>
@@ -518,7 +579,7 @@ function Index() {
       <div className="marquee-strip" aria-hidden="true">
         <div className="marquee-track">
           {Array.from({ length: 2 }, (_, k) => (
-            <span key={k}>KONNECT US ✦ COMING SOON ✦ JESTER STUDIOS ✦ 98% BUILT ✦ INDIE & PROUD ✦ JOIN THE CREW ✦&nbsp;</span>
+            <span key={k}>KONNECT US ✦ COMING SOON ✦ JESTER STUDIOS ✦ {pct}% BUILT ✦ INDIE & PROUD ✦ JOIN THE CREW ✦&nbsp;</span>
           ))}
         </div>
       </div>
@@ -528,7 +589,7 @@ function Index() {
         <div className="mx-auto max-w-6xl px-5">
           <Reveal className="text-center">
             <h2 className="text-3xl font-extrabold sm:text-5xl">Back the Vision: <span className="text-gradient">Invest in Jester Studios</span></h2>
-            <p className="mx-auto mt-5 max-w-2xl text-lg text-muted-foreground">Help us bridge the gap. Your support directly funds server costs, custom assets, 3D models, and the development of our upcoming games.</p>
+            <p className="mx-auto mt-5 max-w-2xl text-lg text-muted-foreground">{text("support_intro", "Help us bridge the gap. Your support directly funds server costs, custom assets, 3D models, and the development of our upcoming games.")}</p>
           </Reveal>
           <div className="mt-14 grid gap-6 md:grid-cols-2">
             <Reveal className="glass glow-hover mouse-tilt rounded-2xl p-8">
@@ -593,9 +654,9 @@ function Index() {
           <Reveal className="text-center">
             <h2 className="text-3xl font-extrabold sm:text-5xl">Meet the <span className="text-neon">Jester Crew</span></h2>
           </Reveal>
-          <TeamGroup title="Founders" members={founders} perRow={5} maxW="max-w-7xl" />
-          <TeamGroup title="Developers" members={developers} perRow={3} />
-          <TeamGroup title="Social Media" members={socialTeam} perRow={2} maxW="max-w-4xl" />
+          <TeamGroup title="Founders" members={team.founders} perRow={5} maxW="max-w-7xl" />
+          <TeamGroup title="Developers" members={team.developers} perRow={3} />
+          <TeamGroup title="Social Media" members={team.social} perRow={2} maxW="max-w-4xl" />
         </div>
       </section>
 
@@ -610,7 +671,7 @@ function Index() {
             </p>
           </Reveal>
           <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {collaborators.map((m, i) => <TeamCard key={m.name} m={m} i={i} perRow={3} />)}
+            {team.collaborators.map((m, i) => <TeamCard key={m.name} m={m} i={i} perRow={3} />)}
           </div>
         </div>
       </section>
@@ -631,6 +692,7 @@ function Index() {
             <a href={DISCORD} target="_blank" rel="noreferrer" className="hover:text-neon">Discord</a>
             <a href={INSTAGRAM} target="_blank" rel="noreferrer" className="hover:text-neon">Instagram</a>
             <a href="#support" className="hover:text-neon">Support/Invest</a>
+            <Link to="/admin-login" className="hover:text-neon">Admin Login</Link>
           </div>
           <p>© {new Date().getFullYear()} Jester Studios • jestercommunity.co</p>
           <p className="text-xs opacity-70">Jester Studios is an independent game development group not affiliated with Roblox Corporation.</p>

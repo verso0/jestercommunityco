@@ -9,4 +9,6 @@
 - [x] Raise Konnect Us development to 98% and add a clickable before-and-after progress gallery.
 - [x] Add a Teaser 1 section with the uploaded teaser video, description, and Teaser 2 / final trailer status badges.
 - [x] Team reshuffle (Hamza/April out, Vee to founders+devs, Groza to social), teasers all Coming Soon, build slider, spotlight + click sparks, link check.
-- [ ] Backend — waiting on user to say what it should do.
+- [x] Backend: accounts, admin login, admin dashboard (text, images, videos, team, activity), publishing.
+- [ ] Make the first admin — waiting on the admin email from the user.
+- [ ] New Discord invite link and Roblox group link — waiting on user.
