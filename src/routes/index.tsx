@@ -289,11 +289,12 @@ function Index() {
     social: site?.team.social.length ? site.team.social : socialTeam,
     collaborators: site?.team.collaborators.length ? site.team.collaborators : collaborators,
   };
-  const videoSlots = site?.videos.length ? site.videos : [
+  // Visitors only receive published slots; fill the rest with "Coming Soon" placeholders.
+  const videoSlots = [
     { slot: "teaser1", title: "Teaser 1", description: "", videoUrl: null, thumbUrl: null, published: false },
     { slot: "teaser2", title: "Teaser 2", description: "", videoUrl: null, thumbUrl: null, published: false },
     { slot: "final", title: "Final Trailer", description: "", videoUrl: null, thumbUrl: null, published: false },
-  ];
+  ].map((d) => site?.videos.find((v) => v.slot === d.slot) ?? d);
 
   useEffect(() => {
     const io = new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting && e.target.classList.add("in")), { threshold: 0.15 });

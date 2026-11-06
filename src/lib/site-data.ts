@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { signPublishedPaths } from "@/lib/media-urls.functions";
 
 export const BUCKET = "site-media";
 
@@ -20,8 +21,8 @@ async function resolveAll(refs: (string | null | undefined)[]): Promise<Map<stri
   const paths = [...new Set(refs.filter((r): r is string => !!r && r.startsWith("storage:")).map((r) => r.slice(8)))];
   const map = new Map<string, string>();
   if (paths.length === 0) return map;
-  const { data } = await supabase.storage.from(BUCKET).createSignedUrls(paths, 60 * 60 * 6);
-  data?.forEach((d) => { if (d.signedUrl && d.path) map.set(`storage:${d.path}`, d.signedUrl); });
+  const signed = await signPublishedPaths({ data: { paths } }).catch(() => ({} as Record<string, string>));
+  Object.entries(signed).forEach(([p, url]) => map.set(`storage:${p}`, url));
   return map;
 }
 
