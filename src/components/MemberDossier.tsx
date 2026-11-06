@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 
 export type DossierMember = { name: string; role: string; bio: string; avatar?: string | null };
@@ -89,9 +90,15 @@ const DECK_INTRO: Record<string, string> = {
 
 export function MemberDossier({ member, deck, src, onClose }: { member: DossierMember | null; deck: string; src?: string | null | undefined; onClose: () => void }) {
   const roles = member ? member.role.split("/").map((r) => r.trim().toUpperCase()).filter(Boolean) : [];
+  useEffect(() => {
+    const l = (window as unknown as { __lenis?: { stop: () => void; start: () => void } }).__lenis;
+    if (!member || !l) return;
+    l.stop();
+    return () => l.start();
+  }, [member]);
   return (
     <Dialog open={!!member} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto border-primary/40 bg-background p-0">
+      <DialogContent data-lenis-prevent className="max-h-[90vh] max-w-2xl overflow-y-auto border-primary/40 bg-background p-0">
         {member && (
           <div>
             <div className="relative flex flex-col items-center gap-4 border-b border-border bg-card px-6 pb-8 pt-10 text-center">

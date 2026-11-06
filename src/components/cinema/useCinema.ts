@@ -29,6 +29,7 @@ export function useCinema(deps: unknown[] = []) {
       if (!reduce) {
         lenis = new Lenis({ lerp: 0.09, smoothWheel: true });
         lenis.on("scroll", ScrollTrigger.update);
+        (window as unknown as { __lenis?: unknown }).__lenis = lenis;
         gsap.ticker.add(tick);
         gsap.ticker.lagSmoothing(0);
         document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((a) => {
