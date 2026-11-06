@@ -159,7 +159,8 @@
 .jester-cursor span { display: block; font-size: 27px; transform: rotate(-12deg); }
 
 @media (pointer: fine) {
-  body, a, button { cursor: none; }
+  body { cursor: auto; }
+  a, button { cursor: pointer; }
 }
 
 @media (prefers-reduced-motion: reduce) {
