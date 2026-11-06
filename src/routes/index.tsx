@@ -374,6 +374,11 @@ function Index() {
           <div className="hero-veil" />
         </div>
         <div className="hero-grid-floor" aria-hidden="true" />
+        <div className="hero-lightning" aria-hidden="true" />
+        <div className="hero-heartbeat" aria-hidden="true" />
+        <div className="hero-ash" aria-hidden="true">
+          {Array.from({ length: 28 }, (_, i) => <i key={i} style={{ left: `${(i * 37) % 100}%`, animationDelay: `${(i * 0.73) % 9}s`, animationDuration: `${7 + (i % 6)}s` }} />)}
+        </div>
         <div data-hero-left className="hero-frame hero-frame-l mouse-drift" aria-hidden="true">
           {afterShots[0] && <img src={afterShots[0].src} alt="" />}
           <span>FIG. 01 — WOODLAND</span>

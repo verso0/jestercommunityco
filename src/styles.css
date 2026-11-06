@@ -701,3 +701,37 @@ html.lenis, html.lenis body { height: auto; }
   .tarot-bio { font-size: .74rem; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
   .tarot-role { font-size: .52rem; }
 }
+
+/* ===== INTENSITY PASS ===== */
+.hero-lightning { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: radial-gradient(ellipse at 60% 10%, oklch(0.95 0 0 / 55%), transparent 60%); opacity: 0; mix-blend-mode: overlay; animation: lightning 9s infinite; }
+@keyframes lightning { 0%,88%,100% { opacity: 0 } 89% { opacity: .9 } 90% { opacity: .1 } 91.5% { opacity: 1 } 93% { opacity: 0 } }
+.hero-heartbeat { position: absolute; inset: 0; z-index: 1; pointer-events: none; box-shadow: inset 0 0 180px 40px color-mix(in oklch, var(--blood) 70%, transparent); animation: heartbeat 1.6s ease-in-out infinite; }
+@keyframes heartbeat { 0%,100% { opacity: .25 } 12% { opacity: .85 } 24% { opacity: .35 } 36% { opacity: .75 } 60% { opacity: .25 } }
+.hero-ash { position: absolute; inset: 0; z-index: 2; pointer-events: none; overflow: hidden; }
+.hero-ash i { position: absolute; top: -5%; width: 3px; height: 3px; border-radius: 50%; background: color-mix(in oklch, var(--blood) 80%, var(--bone)); box-shadow: 0 0 8px var(--blood); animation: ash linear infinite; }
+@keyframes ash { to { transform: translate3d(60px, 110vh, 0) rotate(360deg); opacity: 0 } }
+.hero-title { animation: chroma 3.2s steps(1) infinite; }
+@keyframes chroma {
+  0%,100% { text-shadow: 2px 0 color-mix(in oklch, var(--blood) 80%, transparent), -2px 0 oklch(0.8 0.1 200 / 35%); }
+  47% { text-shadow: 7px 0 var(--blood), -6px 0 oklch(0.8 0.1 200 / 50%); translate: -4px 0; }
+  49% { text-shadow: -9px 2px var(--blood), 8px -2px oklch(0.8 0.1 200 / 50%); translate: 5px 0; }
+  51% { text-shadow: 2px 0 var(--blood), -2px 0 oklch(0.8 0.1 200 / 35%); translate: 0 0; }
+}
+/* Scroll-speed distortion */
+.site-content section img, .tarot, .eyebrow { transform: skewY(calc(var(--vel, 0) * 4deg)); transition: transform .25s ease-out; }
+.site-content section h2 { filter: blur(calc(var(--vel-abs, 0) * 3px)); letter-spacing: calc(var(--vel-abs, 0) * .08em); transition: filter .2s, letter-spacing .2s; }
+body::after { content: ""; position: fixed; inset: 0; z-index: 60; pointer-events: none; background: repeating-linear-gradient(0deg, transparent 0 3px, color-mix(in oklch, var(--blood) 25%, transparent) 3px 4px); opacity: calc(var(--vel-abs, 0) * .8); }
+/* Team cards: possessed */
+.tarot-inner { animation: card-flicker 7s infinite; }
+.tarot:nth-child(2n) .tarot-inner { animation-delay: -2.3s; }
+.tarot:nth-child(3n) .tarot-inner { animation-delay: -4.6s; }
+@keyframes card-flicker { 0%,93%,100% { filter: none } 94% { filter: brightness(1.8) hue-rotate(-20deg) } 95% { filter: brightness(.3) } 96% { filter: brightness(1.3) contrast(1.5) } }
+.tarot:hover .tarot-inner { animation: card-shake .35s steps(3) infinite; }
+@keyframes card-shake { 0% { translate: 0 0 } 33% { translate: -2px 1px } 66% { translate: 2px -1px } }
+.tarot-inner::after { content: ""; position: absolute; left: 10%; right: 10%; top: 0; height: 0; background: linear-gradient(var(--blood), transparent); clip-path: polygon(0 0,100% 0,100% 30%,90% 80%,80% 35%,65% 100%,50% 40%,35% 70%,20% 30%,8% 90%,0 35%); transition: height .9s var(--ease-out); pointer-events: none; }
+.tarot:hover .tarot-inner::after { height: 38%; }
+.tarot:hover .tarot-name { color: var(--blood); text-shadow: 0 0 24px var(--blood); }
+@media (prefers-reduced-motion: reduce) {
+  .hero-lightning, .hero-heartbeat, .hero-ash, .hero-title, .tarot-inner, .tarot:hover .tarot-inner { animation: none !important; }
+  body::after { display: none; }
+}
