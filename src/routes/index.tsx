@@ -242,7 +242,7 @@ function JesterCursor() {
       for (let k = 0; k < 8; k++) {
         const p = document.createElement("span");
         p.className = "click-spark";
-        p.textContent = ["✦", "★", "♦", "🃏"][k % 4];
+        p.textContent = ["✦", "★", "♦", "🃏"][k % 4] ?? "✦";
         p.style.left = `${event.clientX}px`;
         p.style.top = `${event.clientY}px`;
         const a = (k / 8) * Math.PI * 2;
