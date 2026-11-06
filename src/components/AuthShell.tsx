@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import type { InputHTMLAttributes, ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import bgUser from "@/assets/progress-after-full-2.jpg.asset.json";
@@ -7,6 +8,8 @@ export function AuthShell({ title, subtitle, children, tone = "default" }: { tit
   return (
     <div className={`site-content cinema auth-stage ${tone === "admin" ? "auth-admin" : ""}`}>
       <div className="auth-visual" aria-hidden="true">
+        <span className="auth-edition">JESTER STUDIOS / KONNECT US</span>
+        <div className="auth-frame-lines" />
         <img src={tone === "admin" ? bgAdmin.url : bgUser.url} alt="" />
         <div className="auth-visual-veil" />
         <div className="auth-visual-copy">
@@ -15,7 +18,7 @@ export function AuthShell({ title, subtitle, children, tone = "default" }: { tit
         </div>
       </div>
       <div className="auth-panel">
-        <Link to="/" className="cine-logo mb-14"><span className="cine-logo-mark">🃏</span> JESTER<em>studios</em></Link>
+        <Link to="/" className="cine-logo mb-10"><span className="cine-logo-mark">🃏</span> JESTER<em>studios</em></Link>
         {tone === "admin" && <p className="eyebrow mb-4"><span className="eyebrow-n">!</span><span className="eyebrow-line" />Restricted area</p>}
         <h1>{title}</h1>
         {subtitle && <p className="mt-3 text-sm text-muted-foreground">{subtitle}</p>}
@@ -37,8 +40,8 @@ export function Field({ label, ...props }: { label: string } & InputHTMLAttribut
 
 export function SubmitBtn({ children, busy }: { children: ReactNode; busy?: boolean }) {
   return (
-    <button type="submit" disabled={busy} className="mag-btn mag-solid w-full justify-center px-4 py-4 font-bold text-primary-foreground shadow-[0_0_30px_-6px_var(--primary)] hover:brightness-125 disabled:opacity-60">
+    <Button variant="ghost" type="submit" disabled={busy} className="mag-btn mag-solid w-full justify-center px-4 py-4 font-bold text-primary-foreground hover:brightness-125 disabled:opacity-60">
       <span className="mag-fill" aria-hidden="true" /><span className="mag-label">{busy ? "Please wait…" : children}</span>
-    </button>
+    </Button>
   );
 }

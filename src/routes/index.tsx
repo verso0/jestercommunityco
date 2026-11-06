@@ -7,7 +7,9 @@ import workShot1 from "@/assets/work-1.jpg.asset.json";
 import workShot2 from "@/assets/work-2.jpg.asset.json";
 import workShot3 from "@/assets/work-3.jpg.asset.json";
 import workShot4 from "@/assets/work-4.jpg.asset.json";
-import { HorrorFX, WatchingEyes } from "@/components/HorrorFX";
+import { WorldSequence } from "@/components/cinema/WorldSequence";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import avGroza from "@/assets/avatar-groza.jpg.asset.json";
 import avBuddi from "@/assets/avatar-buddi.jpg.asset.json";
 import avBlade from "@/assets/avatar-blade.jpg.asset.json";
@@ -133,41 +135,20 @@ function CopyButton({ value }: { value: string }) {
     setTimeout(() => setCopied(false), 2000);
   };
   return (
-    <button onClick={copy} title="Copy" aria-label={`Copy ${value}`}
+    <Button variant="ghost" onClick={copy} title="Copy" aria-label={`Copy ${value}`}
       className="shrink-0 rounded-lg border border-border p-2 text-muted-foreground transition hover:border-neon hover:text-neon">
       {copied ? <Check size={16} className="text-neon" /> : <Copy size={16} />}
-    </button>
+    </Button>
   );
 }
 
 function Lightbox({ shot, onClose }: { shot: (typeof workShots)[number]; onClose: () => void }) {
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
-    window.addEventListener("keydown", onKey);
-    document.body.style.overflow = "hidden";
-    return () => {
-      window.removeEventListener("keydown", onKey);
-      document.body.style.overflow = "";
-    };
-  }, [onClose]);
-
-  return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/90 p-4 backdrop-blur-md sm:p-8" onClick={onClose} role="dialog" aria-modal="true">
-      <div
-        className="lightbox-card glass relative max-h-full w-full max-w-4xl overflow-y-auto rounded-2xl border border-neon/30 p-3 shadow-[0_0_60px_-10px_var(--neon)] sm:p-5"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button onClick={onClose} aria-label="Close picture" className="absolute right-4 top-4 z-10 rounded-full border border-border bg-background/80 p-2 text-muted-foreground transition hover:border-neon hover:text-neon">
-          <X size={18} />
-        </button>
-        <img src={shot.src} alt={shot.caption} className="w-full rounded-xl object-contain" />
-        <div className="px-2 pb-2 pt-4 sm:px-3">
-          <p className="flex items-center gap-2 font-bold text-neon"><Hammer size={15} className="shrink-0" /> {shot.caption}</p>
-          <p className="mt-3 text-muted-foreground">{shot.description}</p>
-        </div>
-      </div>
-    </div>
-  );
+  return <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}>
+    <DialogContent className="cinema-lightbox" aria-describedby="picture-description">
+      <img src={shot.src} alt={shot.caption} />
+      <div className="cinema-lightbox-copy"><DialogTitle>{shot.caption}</DialogTitle><DialogDescription id="picture-description">{shot.description}</DialogDescription></div>
+    </DialogContent>
+  </Dialog>;
 }
 
 function JesterCursor() {
@@ -175,7 +156,7 @@ function JesterCursor() {
 
   useEffect(() => {
     const cursor = cursorRef.current;
-    if (!cursor || !window.matchMedia("(pointer: fine)").matches) return;
+    if (!cursor || !window.matchMedia("(pointer: fine)").matches || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     let frame = 0;
     const move = (event: PointerEvent) => {
@@ -195,28 +176,13 @@ function JesterCursor() {
     const hide = () => { cursor.dataset["visible"] = "false"; };
     const show = () => { cursor.dataset["visible"] = "true"; };
 
-    const burst = (event: PointerEvent) => {
-      for (let k = 0; k < 8; k++) {
-        const p = document.createElement("span");
-        p.className = "click-spark";
-        p.textContent = ["✦", "★", "♦", "🃏"][k % 4] ?? "✦";
-        p.style.left = `${event.clientX}px`;
-        p.style.top = `${event.clientY}px`;
-        const a = (k / 8) * Math.PI * 2;
-        p.style.setProperty("--dx", `${Math.cos(a) * 60}px`);
-        p.style.setProperty("--dy", `${Math.sin(a) * 60}px`);
-        document.body.appendChild(p);
-        setTimeout(() => p.remove(), 700);
-      }
-    };
-    window.addEventListener("pointerdown", burst);
     window.addEventListener("pointermove", move, { passive: true });
     document.documentElement.addEventListener("mouseleave", hide);
     document.documentElement.addEventListener("mouseenter", show);
     return () => {
       cancelAnimationFrame(frame);
       window.removeEventListener("pointermove", move);
-      window.removeEventListener("pointerdown", burst);
+      
       document.documentElement.removeEventListener("mouseleave", hide);
       document.documentElement.removeEventListener("mouseenter", show);
     };
@@ -234,13 +200,15 @@ function TarotCard({ m, i, total }: { m: TeamMember; i: number; total: number })
       className="tarot"
       style={{ ["--i" as string]: i }}
       onPointerMove={(e) => {
-        const r = ref.current!.getBoundingClientRect();
-        ref.current!.style.setProperty("--rx", `${((e.clientY - r.top) / r.height - 0.5) * -14}deg`);
-        ref.current!.style.setProperty("--ry", `${((e.clientX - r.left) / r.width - 0.5) * 16}deg`);
-        ref.current!.style.setProperty("--gx", `${((e.clientX - r.left) / r.width) * 100}%`);
-        ref.current!.style.setProperty("--gy", `${((e.clientY - r.top) / r.height) * 100}%`);
+        const el = ref.current;
+        if (!el || e.pointerType !== "mouse" || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        const r = el.getBoundingClientRect();
+        ref.current?.style.setProperty("--rx", `${((e.clientY - r.top) / r.height - 0.5) * -14}deg`);
+        ref.current?.style.setProperty("--ry", `${((e.clientX - r.left) / r.width - 0.5) * 16}deg`);
+        ref.current?.style.setProperty("--gx", `${((e.clientX - r.left) / r.width) * 100}%`);
+        ref.current?.style.setProperty("--gy", `${((e.clientY - r.top) / r.height) * 100}%`);
       }}
-      onPointerLeave={() => { ref.current!.style.setProperty("--rx", "0deg"); ref.current!.style.setProperty("--ry", "0deg"); }}
+      onPointerLeave={() => { ref.current?.style.setProperty("--rx", "0deg"); ref.current?.style.setProperty("--ry", "0deg"); }}
     >
       <div className="tarot-inner">
         <span className="tarot-num">{toRoman(i + 1)} / {toRoman(total)}</span>
@@ -248,7 +216,7 @@ function TarotCard({ m, i, total }: { m: TeamMember; i: number; total: number })
           {src ? <img src={src} alt={`${m.name} avatar`} loading="lazy" /> : <span className="text-5xl">🃏</span>}
           <span className="tarot-scan" aria-hidden="true" />
         </div>
-        <h3 className="tarot-name glitch-title" data-text={m.name}>{m.name}</h3>
+        <h3 className="tarot-name">{m.name}</h3>
         <p className="tarot-role">{m.role.split("/").join(" · ")}</p>
         <p className="tarot-bio">{m.bio}</p>
         <span className="tarot-glare" aria-hidden="true" />
@@ -299,7 +267,7 @@ function Index() {
     { slot: "final", title: "Final Trailer", description: "", videoUrl: null, thumbUrl: null, published: false },
   ].map((d) => site?.videos.find((v) => v.slot === d.slot) ?? d);
   const heroBg = afterShots[1]?.src ?? afterShots[0]?.src;
-  const pairs = beforeShots.slice(0, 4).map((b, i) => ({ before: b, after: afterShots[i] ?? afterShots[0]! }));
+  const pairs = beforeShots.slice(0, 4).flatMap((b, i) => { const after = afterShots[i] ?? afterShots[0]; return after ? [{ before: b, after }] : []; });
   const allShots = [...beforeShots.map((s) => ({ ...s, tag: "BEFORE" })), ...afterShots.map((s) => ({ ...s, tag: "AFTER" }))];
   const preload = useMemo(() => [heroBg, afterShots[0]?.src, afterShots[2]?.src].filter(Boolean) as string[], [heroBg, afterShots]);
   const finishLoading = useCallback(() => setLoading(false), []);
@@ -326,8 +294,7 @@ function Index() {
     <div className={`site-content cinema ${loading ? "is-loading" : "is-ready"}`}>
       {loading && <Loader srcs={preload} onDone={finishLoading} />}
       <JesterCursor />
-      <HorrorFX />
-      <div className="mouse-spotlight" aria-hidden="true" />
+
       <div className="scroll-bar" aria-hidden="true" />
       {openShot && <Lightbox shot={openShot} onClose={() => setOpenShot(null)} />}
 
@@ -343,16 +310,16 @@ function Index() {
           <div className="flex items-center gap-2">
             {isAdmin && <Link to="/admin" className="nav-chip hidden sm:inline-flex">Dashboard</Link>}
             {user ? (
-              <button onClick={() => void supabase.auth.signOut()} className="nav-chip hidden sm:inline-flex">Log out</button>
+              <Button variant="ghost" onClick={() => void supabase.auth.signOut()} className="nav-chip hidden sm:inline-flex">Log out</Button>
             ) : (
               <Link to="/login" className="nav-chip hidden sm:inline-flex">Sign in</Link>
             )}
             <a href={DISCORD} target="_blank" rel="noreferrer" className="nav-chip nav-chip-red">Discord</a>
-            <button onClick={() => setMenuOpen((o) => !o)} aria-label={menuOpen ? "Close menu" : "Open menu"} aria-expanded={menuOpen} className={`burger lg:hidden ${menuOpen ? "open" : ""}`}><span /><span /></button>
+            <Button variant="ghost" onClick={() => setMenuOpen((o) => !o)} aria-label={menuOpen ? "Close menu" : "Open menu"} aria-expanded={menuOpen} className={`burger lg:hidden ${menuOpen ? "open" : ""}`}><span /><span /></Button>
           </div>
         </nav>
       </header>
-      <div className={`menu-curtain lg:hidden ${menuOpen ? "open" : ""}`}>
+      <div className={`menu-curtain lg:hidden ${menuOpen ? "open" : ""}`} inert={!menuOpen} aria-hidden={!menuOpen}>
         <div className="menu-curtain-inner">
           {navLinks.map(([l, id], i) => (
             <a key={id} href={`#${id}`} onClick={() => setMenuOpen(false)} style={{ transitionDelay: `${menuOpen ? 150 + i * 50 : 0}ms` }}>
@@ -360,7 +327,7 @@ function Index() {
             </a>
           ))}
           <div className="menu-curtain-foot" style={{ transitionDelay: menuOpen ? "600ms" : "0ms" }}>
-            {user ? <button onClick={() => void supabase.auth.signOut()}>Log out</button> : <Link to="/login">Sign in</Link>}
+            {user ? <Button variant="ghost" onClick={() => void supabase.auth.signOut()}>Log out</Button> : <Link to="/login">Sign in</Link>}
             {isAdmin && <Link to="/admin">Dashboard</Link>}
             <Link to="/admin-login">Admin Login</Link>
           </div>
@@ -372,12 +339,6 @@ function Index() {
         <div className="hero-bg-wrap">
           {heroBg && <img data-hero-bg src={heroBg} alt="" className="hero-bg" />}
           <div className="hero-veil" />
-        </div>
-        <div className="hero-grid-floor" aria-hidden="true" />
-        <div className="hero-lightning" aria-hidden="true" />
-        <div className="hero-heartbeat" aria-hidden="true" />
-        <div className="hero-ash" aria-hidden="true">
-          {Array.from({ length: 28 }, (_, i) => <i key={i} style={{ left: `${(i * 37) % 100}%`, animationDelay: `${(i * 0.73) % 9}s`, animationDuration: `${7 + (i % 6)}s` }} />)}
         </div>
         <div data-hero-left className="hero-frame hero-frame-l mouse-drift" aria-hidden="true">
           {afterShots[0] && <img src={afterShots[0].src} alt="" />}
@@ -392,13 +353,12 @@ function Index() {
           <div className="hero-meta">
             <span>EST. 2026</span><span>INDIE ROBLOX STUDIO</span><span>DEBUT: KONNECT US</span>
           </div>
-          <WatchingEyes className="hero-eyes" />
+
           <h1 data-hero-title className="hero-title">
-            <span className="hero-line"><Split text="PLAYFUL" delay={0.1} /></span>
-            <span className="hero-line hero-line-serif"><Split text="chaos," delay={0.35} className="font-serif-i" /></span>
-            <span className="hero-line hero-line-out"><Split text="SERIOUS" delay={0.5} /></span>
-            <span className="hero-line"><Split text="PASSION." delay={0.7} className="text-blood" /></span>
+            <span className="hero-line"><Split text="JESTER" delay={0.1} /></span>
+            <span className="hero-line hero-line-serif"><Split text="studios." delay={0.3} className="font-serif-i" /></span>
           </h1>
+          <p className="hero-manifesto">Playful chaos. <span>Serious passion.</span></p>
           <div className="hero-foot" data-rise>
             <p>Six independent creators building fresh, memorable Roblox worlds from the ground up. Raw talent, zero corporate backing, and big ambitions.</p>
             <div className="flex flex-wrap gap-3">
@@ -456,12 +416,14 @@ function Index() {
         </div>
       </section>
 
+      <WorldSequence shots={afterShots} onOpen={setOpenShot} />
+
       {/* Progress compare */}
       <section id="progress" className="progress-sec">
         <div className="mx-auto max-w-[1300px] px-5 sm:px-8">
           <Eyebrow n="03">Konnect Us · Classified</Eyebrow>
           <h2 className="display-xl mt-6"><Split text="THEN" /> <span className="font-serif-i text-muted-foreground"><Split text="&" delay={0.15} /></span> <span className="text-blood"><Split text="NOW" delay={0.25} /></span></h2>
-          <p className="mt-6 max-w-2xl text-lg text-muted-foreground" data-rise>See how our first indie game has changed. Drag across each picture: the left side was taken before our latest updates, the right side shows the richer lighting, expanded scenery and added details now in the game.</p>
+          <p className="mt-6 max-w-2xl text-lg text-muted-foreground" data-rise>Our first world, before and after the latest updates. Richer lighting, expanded scenery, and the details that make a place feel alive.</p>
           <div className="compare-list">
             {pairs.map((p, i) => (
               <div key={p.before.src} className={`compare-item ${i % 2 ? "is-flip" : ""}`}>
@@ -471,7 +433,7 @@ function Index() {
                     <span className="compare-n">{String(i + 1).padStart(2, "0")}</span>
                     <h3 className="text-2xl font-bold sm:text-3xl">{p.after.caption}</h3>
                     <p className="mt-4 text-muted-foreground">{p.after.description}</p>
-                    <button onClick={() => setOpenShot(p.after)} className="link-arrow mt-6">View full picture <span>→</span></button>
+                    <Button variant="ghost" onClick={() => setOpenShot(p.after)} className="link-arrow mt-6">View full picture <span>→</span></Button>
                   </div>
                 </div>
               </div>
@@ -480,10 +442,10 @@ function Index() {
           {afterShots.length > 4 && (
             <div className="extra-after" data-rise><div data-stagger className="grid gap-5 sm:grid-cols-2">
               {afterShots.slice(4).map((s) => (
-                <button key={s.src} onClick={() => setOpenShot(s)} className="shot-tile" aria-label={`Open updated view: ${s.caption}`}>
+                <Button variant="ghost" key={s.src} onClick={() => setOpenShot(s)} className="shot-tile" aria-label={`Open updated view: ${s.caption}`}>
                   <img src={s.src} alt={`Updated Konnect Us build — ${s.caption}`} loading="lazy" />
                   <span className="shot-tile-cap"><b>NEW</b> {s.caption}</span>
-                </button>
+                </Button>
               ))}
             </div></div>
           )}
@@ -502,12 +464,12 @@ function Index() {
           </div>
           <div className="collage">
             {beforeShots.slice(0, 4).map((shot, i) => (
-              <button key={shot.src} onClick={() => setOpenShot(shot)} className={`collage-item collage-${i}`} aria-label={`Open ${shot.caption}`}>
+              <Button variant="ghost" key={shot.src} onClick={() => setOpenShot(shot)} className={`collage-item collage-${i}`} aria-label={`Open ${shot.caption}`}>
                 <div data-mask={i % 2 ? "right" : "up"} className="collage-mask">
                   <img data-zoom src={shot.src} alt={`Work in progress by Jester Studios — ${shot.caption}`} loading="lazy" />
                 </div>
                 <span className="collage-cap"><i>{String(i + 1).padStart(2, "0")}</i>{shot.caption}</span>
-              </button>
+              </Button>
             ))}
           </div>
         </div>
@@ -518,18 +480,18 @@ function Index() {
         <div className="reel-head">
           <Eyebrow n="05">Build Timeline</Eyebrow>
           <h2 className="display-lg mt-4">EARLIER BUILDS <span className="font-serif-i text-blood">to</span> LATEST</h2>
-          <p className="reel-hint">Keep scrolling — the reel slides sideways. Tap any frame to open it.</p>
+          <p className="reel-hint">THE DEVELOPMENT ARCHIVE · {String(allShots.length).padStart(2, "0")} FRAMES</p>
         </div>
         <div data-track className="reel-track">
           {allShots.map((s, i) => (
-            <button key={`${s.tag}-${s.src}`} data-hcard onClick={() => setOpenShot(s)} className="reel-card" aria-label={`Open ${s.caption}`}>
+            <Button variant="ghost" key={`${s.tag}-${s.src}`} data-hcard onClick={() => setOpenShot(s)} className="reel-card" aria-label={`Open ${s.caption}`}>
               <div className="reel-img"><img src={s.src} alt={s.caption} loading="lazy" /></div>
               <div className="reel-meta">
                 <span className={s.tag === "BEFORE" ? "tag-before" : "tag-after"}>{s.tag}</span>
                 <span className="reel-idx">{String(i + 1).padStart(2, "0")} / {String(allShots.length).padStart(2, "0")}</span>
               </div>
               <p className="reel-cap">{s.caption}</p>
-            </button>
+            </Button>
           ))}
           <div className="reel-end"><span className="font-serif-i">to be continued…</span></div>
         </div>
@@ -548,7 +510,7 @@ function Index() {
                   <video src={v.videoUrl} poster={v.thumbUrl ?? undefined} controls playsInline preload="none" className="film-video" aria-label={v.title} />
                 ) : (
                   <>
-                    {afterShots[(i * 2 + 1) % afterShots.length] && <img src={afterShots[(i * 2 + 1) % afterShots.length]!.src} alt="" className="film-poster" />}
+                    {afterShots[(i * 2 + 1) % afterShots.length] && <img src={afterShots[(i * 2 + 1) % afterShots.length]?.src} alt="" className="film-poster" />}
                     <div className="film-static" />
                     <div className="film-rec"><i /> NO SIGNAL</div>
                   </>
@@ -577,7 +539,7 @@ function Index() {
         <div className="mx-auto max-w-[1400px] px-5 sm:px-8">
           <Eyebrow n="07">The Crew</Eyebrow>
           <h2 className="display-xl mt-6"><Split text="MEET THE" /> <span className="text-blood font-serif-i"><Split text="jesters" delay={0.2} /></span></h2>
-          <p className="mt-6 max-w-xl text-muted-foreground" data-rise>Every card is a real person. Hover or tap one to look closer.</p>
+
           <Deck title="Founders" n="I" members={team.founders} />
           <Deck title="Developers" n="II" members={team.developers} />
           <Deck title="Social Media" n="III" members={team.social} />

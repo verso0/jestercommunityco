@@ -1,9 +1,10 @@
+import { studioHead } from "@/lib/page-head";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { PageTitle, Panel } from "@/components/admin/ui";
 
-export const Route = createFileRoute("/admin/activity")({ component: Activity });
+export const Route = createFileRoute("/admin/activity")({ head: () => studioHead("Activity log", "Review Jester Studios workspace changes."), component: Activity });
 
 function Activity() {
   const q = useQuery({

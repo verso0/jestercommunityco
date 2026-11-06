@@ -1,3 +1,4 @@
+import { studioHead } from "@/lib/page-head";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -7,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Btn, FilePick, Input, PageTitle, Panel, StatusPill, Textarea, removeFile, uploadFile, usePreviewUrl } from "@/components/admin/ui";
 import type { Tables } from "@/integrations/supabase/types";
 
-export const Route = createFileRoute("/admin/images")({ component: ImagesPage });
+export const Route = createFileRoute("/admin/images")({ head: () => studioHead("Image library", "Manage the Konnect Us development image archive."), component: ImagesPage });
 
 const SECTIONS = [
   { id: "before", label: "Before the updates (also “Small Glimpse”)" },

@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { useEffect, useState, type ReactNode, type InputHTMLAttributes, type TextareaHTMLAttributes } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -5,7 +6,7 @@ import { BUCKET, safeFileName, validateFile } from "@/lib/site-data";
 
 export function PageTitle({ title, desc }: { title: string; desc?: string }) {
   return (
-    <div className="mb-8">
+    <div className="admin-page-title mb-8">
       <h1 className="text-3xl font-extrabold">{title}</h1>
       {desc && <p className="mt-2 max-w-2xl text-muted-foreground">{desc}</p>}
     </div>
@@ -13,7 +14,7 @@ export function PageTitle({ title, desc }: { title: string; desc?: string }) {
 }
 
 export function Panel({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <div className={`rounded-xl border border-border bg-surface p-5 ${className}`}>{children}</div>;
+  return <div className={`admin-panel rounded-lg border border-border bg-surface p-5 ${className}`}>{children}</div>;
 }
 
 export function Input(props: InputHTMLAttributes<HTMLInputElement>) {
@@ -29,7 +30,7 @@ export function Btn({ children, onClick, variant = "ghost", disabled, type = "bu
     ghost: "border border-border text-foreground hover:border-foreground/40",
     danger: "border border-amber/50 text-amber hover:bg-amber/10",
   }[variant];
-  return <button type={type} onClick={onClick} disabled={disabled} className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-bold disabled:opacity-50 ${v}`}>{children}</button>;
+  return <Button variant="ghost" type={type} onClick={onClick} disabled={disabled} className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-bold disabled:opacity-50 ${v}`}>{children}</Button>;
 }
 
 export function StatusPill({ on }: { on: boolean }) {
