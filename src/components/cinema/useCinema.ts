@@ -25,7 +25,6 @@ export function useCinema(deps: unknown[] = []) {
       const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
       let lenis: InstanceType<typeof Lenis> | null = null;
-      const anchors: Array<{ anchor: HTMLAnchorElement; handler: (event: MouseEvent) => void }> = [];
       const tick = (t: number) => lenis?.raf(t * 1000);
       if (!reduce) {
         lenis = new Lenis({ lerp: 0.09, smoothWheel: true });
@@ -33,16 +32,13 @@ export function useCinema(deps: unknown[] = []) {
         gsap.ticker.add(tick);
         gsap.ticker.lagSmoothing(0);
         document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((a) => {
-          const handler = (e: MouseEvent) => {
-            const id = a.getAttribute("href");
-            if (!id) return;
+          a.addEventListener("click", (e) => {
+            const id = a.getAttribute("href")!;
             const el = id === "#" ? document.body : document.querySelector(id);
             if (!el) return;
             e.preventDefault();
             lenis?.scrollTo(el as HTMLElement, { offset: -70, duration: 1.6 });
-          };
-          a.addEventListener("click", handler);
-          anchors.push({ anchor: a, handler });
+          });
         });
       }
 
@@ -61,8 +57,8 @@ export function useCinema(deps: unknown[] = []) {
         gsap.utils.toArray<HTMLElement>("[data-rise]").forEach((el) => {
           const kids = el.querySelectorAll("[data-stagger] > *");
           const targets = kids.length ? kids : [el];
-          gsap.fromTo(targets, { y: 35, opacity: 0 }, {
-            y: 0, opacity: 1, duration: 0.8, ease: "power3.out", stagger: 0.06,
+          gsap.fromTo(targets, { y: 60, opacity: 0, filter: "blur(8px)" }, {
+            y: 0, opacity: 1, filter: "blur(0px)", duration: 1.1, ease: "power4.out", stagger: 0.09,
             scrollTrigger: { trigger: el, start: "top 85%" },
           });
         });
@@ -87,29 +83,19 @@ export function useCinema(deps: unknown[] = []) {
           gsap.to(o, { v: Number(el.dataset['count']), duration: 2.4, ease: "power3.out", onUpdate: () => { el.textContent = String(Math.round(o.v)); }, scrollTrigger: { trigger: el, start: "top 85%" } });
         });
         gsap.utils.toArray<HTMLElement>("[data-words]").forEach((el) => {
-          gsap.fromTo(el.querySelectorAll(".w"), { opacity: 0.6 }, { opacity: 1, stagger: 0.1, ease: "none", scrollTrigger: { trigger: el, start: "top 85%", end: "bottom 70%", scrub: true } });
+          gsap.fromTo(el.querySelectorAll(".w"), { opacity: 0.12 }, { opacity: 1, stagger: 0.1, ease: "none", scrollTrigger: { trigger: el, start: "top 75%", end: "bottom 45%", scrub: true } });
         });
         const mm = gsap.matchMedia();
         mm.add("(min-width: 768px)", () => {
-          gsap.utils.toArray<HTMLElement>("[data-world]").forEach((section) => {
-            const layers = section.querySelectorAll<HTMLElement>("[data-world-layer]");
-            if (layers.length < 2) return;
-            gsap.set(layers, { zIndex: (i) => i + 1 });
-            gsap.set(Array.from(layers).slice(1), { clipPath: "inset(100% 0% 0% 0%)" });
-            const timeline = gsap.timeline({ scrollTrigger: { trigger: section, start: "top top", end: "+=180%", pin: true, scrub: 1, invalidateOnRefresh: true } });
-            layers.forEach((layer, i) => {
-              if (i > 0) timeline.to(layer, { clipPath: "inset(0% 0% 0% 0%)", duration: 1, ease: "none" }, i);
-              timeline.fromTo(layer.querySelector("img"), { scale: 1.08 }, { scale: 1, duration: 1.5, ease: "none" }, i);
-            });
-            timeline.fromTo(section.querySelector("[data-world-progress]"), { scaleX: 0 }, { scaleX: 1, duration: timeline.duration(), ease: "none" }, 0);
-          });
           gsap.utils.toArray<HTMLElement>("[data-hscroll]").forEach((sec) => {
             const track = sec.querySelector<HTMLElement>("[data-track]");
             if (!track) return;
-            const dist = () => Math.max(0, track.scrollWidth - window.innerWidth);
+            const dist = () => track.scrollWidth - window.innerWidth + 80;
             const tween = gsap.to(track, { x: () => -dist(), ease: "none", scrollTrigger: { trigger: sec, start: "top top", end: () => `+=${dist()}`, pin: true, scrub: 0.8, invalidateOnRefresh: true, anticipatePin: 1 } });
             track.querySelectorAll<HTMLElement>("[data-hcard]").forEach((card) => {
-              gsap.fromTo(card, { y: 24 }, { y: 0, ease: "none", scrollTrigger: { trigger: card, containerAnimation: tween, start: "left right", end: "left 65%", scrub: true } });
+              const img = card.querySelector("img");
+              if (img) gsap.fromTo(img, { xPercent: -12 }, { xPercent: 12, ease: "none", scrollTrigger: { trigger: card, containerAnimation: tween, start: "left right", end: "right left", scrub: true } });
+              gsap.fromTo(card, { rotateY: -18, scale: 0.88 }, { rotateY: 0, scale: 1, ease: "power2.out", scrollTrigger: { trigger: card, containerAnimation: tween, start: "left 95%", end: "left 45%", scrub: true } });
             });
           });
         });
@@ -117,8 +103,8 @@ export function useCinema(deps: unknown[] = []) {
         const hero = document.querySelector<HTMLElement>("[data-hero]");
         if (hero) {
           const tl = gsap.timeline({ scrollTrigger: { trigger: hero, start: "top top", end: "bottom top", scrub: true } });
-          tl.to("[data-hero-bg]", { yPercent: 12 }, 0)
-            .to("[data-hero-title]", { yPercent: -15, opacity: 0 }, 0)
+          tl.to("[data-hero-bg]", { scale: 1.25, yPercent: 18, filter: "blur(6px) brightness(.5)" }, 0)
+            .to("[data-hero-title]", { yPercent: -40, letterSpacing: "0.08em", opacity: 0 }, 0)
             .to("[data-hero-left]", { xPercent: -60, rotate: -14, opacity: 0 }, 0)
             .to("[data-hero-right]", { xPercent: 60, rotate: 14, opacity: 0 }, 0);
         }
@@ -130,7 +116,6 @@ export function useCinema(deps: unknown[] = []) {
       cleanup = () => {
         window.removeEventListener("load", onLoad);
         ctx.revert();
-        anchors.forEach(({ anchor, handler }) => anchor.removeEventListener("click", handler));
         gsap.ticker.remove(tick);
         lenis?.destroy();
       };

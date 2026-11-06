@@ -10,8 +10,5 @@
 - [x] Add a Teaser 1 section with the uploaded teaser video, description, and Teaser 2 / final trailer status badges.
 - [x] Team reshuffle (Hamza/April out, Vee to founders+devs, Groza to social), teasers all Coming Soon, build slider, spotlight + click sparks, link check.
 - [x] Backend: accounts, admin login, admin dashboard (text, images, videos, team, activity), publishing.
-- [x] Configure listed admin accounts to receive access after email confirmation.
-- [x] Refine the full visual experience and connected scroll transitions without glitches.
-- [x] Refine sign-in and shared admin presentation while preserving existing actions.
-- [x] Audit desktop, mobile, galleries, navigation, all six authenticated admin pages, draft save/readback, and reduced motion.
+- [ ] Make the first admin — waiting on the admin email from the user.
 - [ ] New Discord invite link and Roblox group link — waiting on user.

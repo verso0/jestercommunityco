@@ -15,5 +15,3 @@
 - Uploaded files live in the private `site-media` bucket (workspace blocks public buckets); stored refs are `storage:<path>` or `storage_path` and are resolved to signed URLs. Anon can read only files referenced by published rows.
 - Unpublished text drafts live in admin-only `content_drafts`; `site_content.draft` is deprecated.
 - Activity log rows are written by database triggers, never by client code.
-- Choreograph public scroll sequences in the shared cinema hook with responsive GSAP contexts and cleanup; keep reduced-motion views readable without pinning.
-- Share workspace metadata through studioHead and workspace presentation through admin/ui so every admin view stays consistent.

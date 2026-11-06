@@ -39,25 +39,21 @@ export function Loader({ srcs, onDone }: { srcs: string[]; onDone: () => void })
   const done = useRef(false);
   useEffect(() => {
     let loaded = 0;
-    let alive = true;
-    const timers: Array<ReturnType<typeof setTimeout>> = [];
-    const images: HTMLImageElement[] = [];
     const total = srcs.length || 1;
     const finish = () => {
-      if (!alive || done.current) return;
+      if (done.current) return;
       done.current = true;
       setPct(100);
-      timers.push(setTimeout(() => setLeaving(true), 350));
-      timers.push(setTimeout(onDone, 1250));
+      setTimeout(() => setLeaving(true), 350);
+      setTimeout(onDone, 1250);
     };
     srcs.forEach((s) => {
       const img = new Image();
-      images.push(img);
-      img.onload = img.onerror = () => { if (!alive) return; loaded++; setPct(Math.round((loaded / total) * 100)); if (loaded >= total) finish(); };
+      img.onload = img.onerror = () => { loaded++; setPct(Math.round((loaded / total) * 100)); if (loaded >= total) finish(); };
       img.src = s;
     });
     const cap = setTimeout(finish, 6000); // never hold visitors hostage
-    return () => { alive = false; clearTimeout(cap); timers.forEach(clearTimeout); images.forEach((img) => { img.onload = null; img.onerror = null; }); done.current = false; };
+    return () => clearTimeout(cap);
   }, [srcs, onDone]);
   return (
     <div className={`loader ${leaving ? "loader-out" : ""}`} role="status" aria-label={`Loading ${pct}%`}>
@@ -100,13 +96,11 @@ export function Magnetic({ href, children, variant = "solid" }: { href: string; 
       rel={ext ? "noreferrer" : undefined}
       className={`mag-btn mag-${variant}`}
       onPointerMove={(e) => {
-        const el = ref.current;
-        if (!el || e.pointerType !== "mouse" || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-        const r = el.getBoundingClientRect();
-        el.style.setProperty("--mx", `${(e.clientX - r.left - r.width / 2) * 0.12}px`);
-        el.style.setProperty("--my", `${(e.clientY - r.top - r.height / 2) * 0.15}px`);
+        const r = ref.current!.getBoundingClientRect();
+        ref.current!.style.setProperty("--mx", `${(e.clientX - r.left - r.width / 2) * 0.25}px`);
+        ref.current!.style.setProperty("--my", `${(e.clientY - r.top - r.height / 2) * 0.35}px`);
       }}
-      onPointerLeave={() => { ref.current?.style.setProperty("--mx", "0px"); ref.current?.style.setProperty("--my", "0px"); }}
+      onPointerLeave={() => { ref.current!.style.setProperty("--mx", "0px"); ref.current!.style.setProperty("--my", "0px"); }}
     >
       <span className="mag-fill" aria-hidden="true" />
       <span className="mag-label">{children}</span>

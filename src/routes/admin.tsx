@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { createFileRoute, Link, Outlet, redirect, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { LayoutDashboard, Type, Image, Film, Users, History, LogOut, ExternalLink } from "lucide-react";
@@ -52,7 +51,7 @@ function AdminLayout() {
 
   return (
     <div className="admin-shell min-h-screen bg-background md:flex">
-      <aside className="border-b border-border bg-surface md:sticky md:top-0 md:h-screen md:w-64 md:border-b-0 md:border-r">
+      <aside className="border-b border-border bg-surface md:sticky md:top-0 md:h-screen md:w-60 md:border-b-0 md:border-r">
         <div className="flex items-center justify-between p-5">
           <Link to="/" className="cine-logo"><span className="cine-logo-mark">🃏</span> JESTER<em>studios</em></Link>
           <span className="rounded bg-primary/30 px-2 py-0.5 text-[10px] font-bold text-amber">ADMIN</span>
@@ -67,17 +66,16 @@ function AdminLayout() {
             );
           })}
         </nav>
-        <div className="hidden space-y-2 p-5 text-xs text-muted-foreground md:block md:absolute md:bottom-0 md:w-64">
+        <div className="hidden space-y-2 p-5 text-xs text-muted-foreground md:block md:absolute md:bottom-0 md:w-60">
           <p className="truncate">{adminEmail}</p>
           <a href="/" target="_blank" rel="noreferrer" className="flex items-center gap-1.5 hover:text-foreground"><ExternalLink size={13} /> View live site</a>
-          <Button variant="ghost" onClick={signOut} className="flex items-center gap-1.5 hover:text-amber"><LogOut size={13} /> Log out</Button>
+          <button onClick={signOut} className="flex items-center gap-1.5 hover:text-amber"><LogOut size={13} /> Log out</button>
         </div>
       </aside>
-      <main className="admin-main min-w-0 flex-1 p-5 md:p-10">
+      <main className="page-enter flex-1 p-5 md:p-10">
         <div className="mb-6 flex justify-end md:hidden">
-          <Button variant="ghost" onClick={signOut} className="flex items-center gap-1.5 text-sm text-muted-foreground"><LogOut size={14} /> Log out</Button>
+          <button onClick={signOut} className="flex items-center gap-1.5 text-sm text-muted-foreground"><LogOut size={14} /> Log out</button>
         </div>
-        <div className="admin-topline"><span>STUDIO WORKSPACE</span><a href="/" target="_blank" rel="noreferrer">JESTER STUDIOS <ExternalLink size={12} /></a></div>
         <div key={path} className="admin-route"><Outlet /></div>
       </main>
     </div>

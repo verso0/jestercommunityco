@@ -1,4 +1,3 @@
-import { studioHead } from "@/lib/page-head";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -8,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Btn, FilePick, Input, PageTitle, Panel, StatusPill, Textarea, removeFile, uploadFile, usePreviewUrl } from "@/components/admin/ui";
 import type { Tables } from "@/integrations/supabase/types";
 
-export const Route = createFileRoute("/admin/team")({ head: () => studioHead("Team", "Manage Jester Studios creators and collaborators."), component: TeamPage });
+export const Route = createFileRoute("/admin/team")({ component: TeamPage });
 
 const SECTIONS = [
   { id: "founders", label: "Founders" },

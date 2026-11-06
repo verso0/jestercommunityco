@@ -1,4 +1,3 @@
-import { studioHead } from "@/lib/page-head";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -7,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Btn, PageTitle, Panel, StatusPill, Textarea } from "@/components/admin/ui";
 import type { Tables } from "@/integrations/supabase/types";
 
-export const Route = createFileRoute("/admin/content")({ head: () => studioHead("Site text", "Manage published text and private drafts for Jester Studios."), component: ContentPage });
+export const Route = createFileRoute("/admin/content")({ component: ContentPage });
 
 function ContentPage() {
   const q = useQuery({

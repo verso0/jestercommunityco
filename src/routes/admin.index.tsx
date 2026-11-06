@@ -1,10 +1,9 @@
-import { studioHead } from "@/lib/page-head";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { PageTitle, Panel } from "@/components/admin/ui";
 
-export const Route = createFileRoute("/admin/")({ head: () => studioHead("Overview", "Jester Studios workspace overview and recent activity."), component: Overview });
+export const Route = createFileRoute("/admin/")({ component: Overview });
 
 type Stats = { users: number; published_content: number; images: number; videos: number };
 
